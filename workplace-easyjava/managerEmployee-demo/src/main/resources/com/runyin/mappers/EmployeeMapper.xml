@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.runyin.mappers.EmployeeMapper">
+    <resultMap id="base_result_map" type="com.runyin.entity.Employee">
+        <!-- employee_id -->
+        <result column="employee_id" property="employeeId"  />
+
+        <!-- last_name -->
+        <result column="last_name" property="lastName"  />
+
+        <!-- first_name -->
+        <result column="first_name" property="firstName"  />
+
+        <!-- phone_number -->
+        <result column="phone_number" property="phoneNumber"  />
+
+        <!-- email -->
+        <result column="email" property="email"  />
+
+        <!-- hire_date -->
+        <result column="hire_date" property="hireDate"  />
+
+        <!-- job_id -->
+        <result column="job_id" property="jobId"  />
+
+        <!-- salary -->
+        <result column="salary" property="salary"  />
+
+        <!-- commission_pct -->
+        <result column="commission_pct" property="commissionPct"  />
+
+        <!-- manager_id -->
+        <result column="manager_id" property="managerId"  />
+
+        <!-- department_id -->
+        <result column="department_id" property="departmentId"  />
+
+    </resultMap>
+
+    <!--通用查询列-->
+    <sql id="base_column_list">
+        employee_id,last_name,first_name,phone_number,email,hire_date,job_id,salary,commission_pct,manager_id,department_id
+    </sql>
+
+    <!--基础查询条件-->
+    <sql id="base_query_condition">
+        <if test="query.employeeId != null">
+            and employee_id = #{query.employeeId}
+        </if>
+
+        <if test="query.lastName != null and query.lastName!=''">
+            and last_name = #{query.lastName}
+        </if>
+
+        <if test="query.firstName != null and query.firstName!=''">
+            and first_name = #{query.firstName}
+        </if>
+
+        <if test="query.phoneNumber != null and query.phoneNumber!=''">
+            and phone_number = #{query.phoneNumber}
+        </if>
+
+        <if test="query.email != null and query.email!=''">
+            and email = #{query.email}
+        </if>
+
+        <if test="query.hireDate != null">
+            and hire_date = #{query.hireDate}
+        </if>
+
+        <if test="query.jobId != null and query.jobId!=''">
+            and job_id = #{query.jobId}
+        </if>
+
+        <if test="query.salary != null">
+            and salary = #{query.salary}
+        </if>
+
+        <if test="query.commissionPct != null">
+            and commission_pct = #{query.commissionPct}
+        </if>
+
+        <if test="query.managerId != null">
+            and manager_id = #{query.managerId}
+        </if>
+
+        <if test="query.departmentId != null">
+            and department_id = #{query.departmentId}
+        </if>
+    </sql>
+
+    <!--扩展字段查询条件-->
+    <sql id="base_query_condition_extend">
+        <if test="query.lastNameFuzzy !=null and query.lastNameFuzzy!=''">
+            and last_name like concat('%',#{query.lastNameFuzzy},'%')
+        </if>
+        <if test="query.firstNameFuzzy !=null and query.firstNameFuzzy!=''">
+            and first_name like concat('%',#{query.firstNameFuzzy},'%')
+        </if>
+        <if test="query.phoneNumberFuzzy !=null and query.phoneNumberFuzzy!=''">
+            and phone_number like concat('%',#{query.phoneNumberFuzzy},'%')
+        </if>
+        <if test="query.emailFuzzy !=null and query.emailFuzzy!=''">
+            and email like concat('%',#{query.emailFuzzy},'%')
+        </if>
+        <if test="query.jobIdFuzzy !=null and query.jobIdFuzzy!=''">
+            and job_id like concat('%',#{query.jobIdFuzzy},'%')
+        </if>
+
+        <if test="query.hireDateStart !=null and query.hireDateStart!=''">
+            <![CDATA[and hire_date >= str_to_date(#{query.hireDateStart}, '%Y-%m-%d')]]>
+        </if>
+        <if test="query.hireDateEnd !=null and query.hireDateEnd!=''">
+            <![CDATA[and hire_date < date_sub(str_to_date(#{query.hireDateEnd}, '%Y-%m-%d'), interval- 1 day)]]>
+        </if>
+    </sql>
+
+    <!--通用查询条件 普通列+扩展字段-->
+    <sql id="query_condition">
+        <where>
+            <include refid="base_query_condition"/>
+            <include refid="base_query_condition_extend"/>
+        </where>
+    </sql>
+
+    <!--查询列表-->
+    <select id="selectList" resultMap="base_result_map">
+        select <include refid="base_column_list"/> from employees <include refid="query_condition"/>
+        <if test="query.orderBy != null ">order by ${query.orderBy}</if>
+        <if test="query.simplePage != null ">limit #{query.simplePage.start}, #{query.simplePage.offset}</if>
+    </select>
+
+    <!--查询数量-->
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1) from employees <include refid="query_condition"/>
+    </select>
+</mapper>

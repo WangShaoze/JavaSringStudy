@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.show.words.mappers.WsWordMapper">
+
+    <!--实体映射-->
+    <resultMap id="base_result_map" type="com.show.words.entity.WsWord">
+        <!-- 单词id -->
+        <id column="id" property="id"  />
+
+        <!-- 单词 -->
+        <result column="word" property="word"  />
+
+        <!-- 单词对应的意思及词性 -->
+        <result column="mean" property="mean"  />
+
+        <!-- 磁性列表 -->
+        <result column="ci_xin" property="ciXin"  />
+
+        <!-- 词义转化为json数据 -->
+        <result column="mean_detail" property="meanDetail"  />
+    </resultMap>
+
+    <!--通用查询列-->
+    <sql id="base_column_list">
+        id,word,mean,ci_xin,mean_detail
+    </sql>
+
+    <!--基础查询条件-->
+    <sql id="base_query_condition">
+        <if test="query.id != null and query.id != ''">
+            and id=#{query.id}
+        </if>
+        <if test="query.word != null and query.word != ''">
+            and word=#{query.word}
+        </if>
+        <if test="query.mean != null and query.mean != ''">
+            and mean=#{query.mean}
+        </if>
+        <if test="query.ciXin != null and query.ciXin != ''">
+            and ci_xin=#{query.ciXin}
+        </if>
+    </sql>
+
+    <!--扩展字段查询条件-->
+    <sql id="base_query_condition_extend">
+        <if test="query.wordFuzzy != null and query.wordFuzzy != ''">
+            and word like concat('%', #{query.wordFuzzy}, '%')
+        </if>
+
+        <if test="query.meanFuzzy != null and query.meanFuzzy != ''">
+            and mean like concat('%', #{query.meanFuzzy}, '%')
+        </if>
+
+        <if test="query.ciXinFuzzy != null and query.ciXinFuzzy != ''">
+            and ci_xin like concat('%', #{query.ciXinFuzzy}, '%')
+        </if>
+    </sql>
+
+    <!--通用查询条件 普通列+扩展字段-->
+    <sql id="query_condition">
+        <where>
+            <include refid="base_query_condition"/>
+            <include refid="base_query_condition_extend"/>
+        </where>
+    </sql>
+
+    <!--查询列表-->
+    <select id="selectList" resultMap="base_result_map">
+        select <include refid="base_column_list"/> from ws_words <include refid="query_condition"/>
+        <if test="query.orderBy != null">order by ${query.orderBy}</if>
+        <if test="query.simplePage != null ">limit #{query.simplePage.start}, #{query.simplePage.offset}</if>
+    </select>
+
+    <!--查询数量-->
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1) from ws_words <include refid="query_condition"/>
+    </select>
+</mapper>
