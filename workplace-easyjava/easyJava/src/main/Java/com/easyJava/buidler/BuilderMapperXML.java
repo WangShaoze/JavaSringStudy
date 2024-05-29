@@ -107,7 +107,7 @@ public class BuilderMapperXML {
                 }
                 bw.write("\t\t<if test=\"query."+fieldInfo.getPropertyName()+" != null"+strTypeAdd+"\">");
                 bw.newLine();
-                bw.write("\t\t\tand id= #{query."+fieldInfo.getPropertyName()+"}");
+                bw.write("\t\t\tand "+fieldInfo.getFieldName()+"= #{query."+fieldInfo.getPropertyName()+"}");
                 bw.newLine();
                 bw.write("\t\t</if>");
                 bw.newLine();

@@ -24,7 +24,7 @@ public class BuildController {
 
         String className = tableInfo.getBeanName() + "Controller";
         String interfaceName = tableInfo.getBeanName() + "Service";
-        String mapperName = tableInfo.getBeanName() + Constants.SUFFIX_MAPPERS;
+        String queryName = tableInfo.getBeanName() + Constants.SUFFIX_BEAN_QUERY;
 
 
         File poFile = new File(folder, className + ".java");
@@ -44,7 +44,7 @@ public class BuildController {
             bw.newLine();
 
             // 导入包代码生成
-            bw.write("import "+Constants.PACKAGE_QUERY+".ProductInfoQuery;");
+            bw.write("import "+Constants.PACKAGE_QUERY+"."+queryName+";");
             bw.newLine();
             bw.write("import "+Constants.PACKAGE_VO+".ResponseVO;");
             bw.newLine();

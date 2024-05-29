@@ -1,4 +1,4 @@
-package com.easychatjava.test;
+package com.easyChat.test;
 
 
 import java.io.*;
