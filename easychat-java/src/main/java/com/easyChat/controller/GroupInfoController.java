@@ -5,8 +5,14 @@ import com.easyChat.entity.vo.ResponseVO;
 import com.easyChat.entity.po.GroupInfo;
 import com.easyChat.services.GroupInfoService;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 /**
@@ -20,6 +26,19 @@ public class GroupInfoController extends ABaseController {
 	@Resource
 	private GroupInfoService groupInfoService;
 
+	@RequestMapping("/save_group")
+	public ResponseVO saveGroup(HttpServletRequest request,
+								@NotEmpty String groupId,
+								String groupName,
+								String groupNotice,
+								@NotNull Integer joinType,
+								MultipartFile avatarFile,
+								MultipartFile avatarCover){
+
+		String token = request.getHeader("token");
+
+		return getSuccessResponseVO(null);
+	}
 	/**
 	 * 加载数据
 	 */
@@ -79,5 +98,7 @@ public class GroupInfoController extends ABaseController {
 		this.groupInfoService.deleteByGroupId(groupId);
 		return getSuccessResponseVO(null);
 	}
+
+
 }
 
