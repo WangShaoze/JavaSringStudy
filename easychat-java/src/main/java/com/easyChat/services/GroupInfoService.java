@@ -3,6 +3,10 @@ package com.easyChat.services;
 import com.easyChat.entity.po.GroupInfo;
 import com.easyChat.entity.query.GroupInfoQuery;
 import com.easyChat.entity.vo.PaginationResultVO;
+import com.easyChat.exception.BusinessException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -11,6 +15,11 @@ import java.util.List;
  * @date: 2024/06/04
  */
 public interface GroupInfoService {
+
+	/**
+	 * 保存或者更新群组信息
+	 * */
+	void saveGroup(GroupInfo groupInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws BusinessException, IOException;
 
 
 	/**

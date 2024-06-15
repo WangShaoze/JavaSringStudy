@@ -205,7 +205,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 	public UserInfoVO login(String email, String password) throws BusinessException {
 
 		UserInfo userInfo = userInfoMapper.selectByEmail(email);
-		if (userInfo==null||userInfo.getPassword().equals(password)) {
+		if (userInfo==null||!userInfo.getPassword().equals(password)) {
 			throw new BusinessException("账号不存存或密码不正确");
 		}
 		if (UserStatusEnum.DISABLE.getStatus().equals(userInfo.getStatus())){

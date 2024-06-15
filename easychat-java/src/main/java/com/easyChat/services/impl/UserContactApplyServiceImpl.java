@@ -1,13 +1,23 @@
 package com.easyChat.services.impl;
 
+import com.easyChat.entity.po.UserContact;
 import com.easyChat.entity.po.UserContactApply;
 import com.easyChat.entity.query.UserContactApplyQuery;
+import com.easyChat.entity.query.UserContactQuery;
+import com.easyChat.enums.ResponseCodeEnum;
+import com.easyChat.enums.UserContactApplyStatusEnum;
+import com.easyChat.enums.UserContactStatusEnum;
+import com.easyChat.exception.BusinessException;
+import com.easyChat.mappers.UserContactMapper;
 import com.easyChat.services.UserContactApplyService;
 import com.easyChat.mappers.UserContactApplyMapper;
 import com.easyChat.entity.query.SimplePage;
 import com.easyChat.entity.vo.PaginationResultVO;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +30,58 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 	@Resource
 	private UserContactApplyMapper<UserContactApply, UserContactApplyQuery> userContactApplyMapper;
 
+	// userContactMapper
+	@Resource
+	private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void dealWithApply(String userId, Integer applyId, Integer status) throws BusinessException {
+		UserContactApplyStatusEnum statusEnum = UserContactApplyStatusEnum.getStatus(status);
+		// 没有状态，或者状态还是待处理状态时直接报参数异常
+		if (statusEnum==null||UserContactApplyStatusEnum.INIT==statusEnum){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+
+		// 获取 申请人信息，如果数据库中的申请信息不存在或者接收者id不是当前用户，说明越权了
+		UserContactApply userContactApply = this.userContactApplyMapper.selectByApplyId(applyId);
+		if (userContactApply==null||!userId.equals(userContactApply.getReceiveUserId())){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+
+		// 修改状态
+		UserContactApply updateApplyInfo = new UserContactApply();
+		updateApplyInfo.setStatus(statusEnum.getStatus());
+		updateApplyInfo.setLastApplyTime(System.currentTimeMillis());
+
+		UserContactApplyQuery userContactApplyQuery = new UserContactApplyQuery();
+		userContactApplyQuery.setApplyId(applyId);
+		// 这里加入状态作为条件，是防止状态不是 "待处理" 时候，对状态进行修改
+		userContactApplyQuery.setStatus(UserContactApplyStatusEnum.INIT.getStatus());
+
+		Integer count = userContactApplyMapper.updateByParam(updateApplyInfo, userContactApplyQuery);
+		if (count == 0){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+
+		if (UserContactApplyStatusEnum.PASS.getStatus().equals(status)){
+			// TODO 添加联系人
+			return;
+		}
+
+		if (UserContactApplyStatusEnum.BLACKLIST.getStatus().equals(status)){
+			// 当来黑申请者时候，需要在联系人表中更新相关信息
+			Date curDate = new Date();
+			UserContact userContact = new UserContact();
+			userContact.setUserId(userContactApply.getApplyUserId());
+			userContact.setContactId(userContactApply.getContactId());
+			userContact.setContactType(userContactApply.getContactType());
+			userContact.setCreateTime(curDate);
+			userContact.setStatus(UserContactStatusEnum.BLACKLIST_BE.getStatus());
+			userContact.setLastUpdateTime(curDate);
+			userContactMapper.insertOrUpdate(userContact);
+		}
+	}
 
 	/**
 	 * 根据条件查询列表

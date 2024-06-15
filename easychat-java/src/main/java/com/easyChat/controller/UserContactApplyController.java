@@ -14,8 +14,8 @@ import java.util.List;
  * @author: 王绍泽
  * @date: 2024/06/04
  */
-@RestController
-@RequestMapping("/userContactApplyService")
+@RestController("userContactApplyController")
+@RequestMapping("/userContactApply")
 public class UserContactApplyController extends ABaseController {
 	@Resource
 	private UserContactApplyService userContactApplyService;

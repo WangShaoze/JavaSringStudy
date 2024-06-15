@@ -1,5 +1,7 @@
 package com.easyChat.entity.query;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import java.util.Date;
 
 
@@ -52,7 +54,20 @@ public class UserContactQuery extends BaseQuery {
 
 	private String lastUpdateTimeEnd;
 
-	public void setUserId(String userId) { 
+	/**
+	 * 是否关联查询用户信息
+	 * */
+	private Boolean queryUserInfo;
+
+	public Boolean getQueryUserInfo() {
+		return queryUserInfo;
+	}
+
+	public void setQueryUserInfo(Boolean queryUserInfo) {
+		this.queryUserInfo = queryUserInfo;
+	}
+
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getUserId() { 

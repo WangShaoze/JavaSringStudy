@@ -1,8 +1,12 @@
 package com.easyChat.services;
 
+import com.easyChat.entity.dto.TokenUserInfoDto;
+import com.easyChat.entity.dto.UserContactSearchResultDto;
 import com.easyChat.entity.po.UserContact;
 import com.easyChat.entity.query.UserContactQuery;
 import com.easyChat.entity.vo.PaginationResultVO;
+import com.easyChat.exception.BusinessException;
+
 import java.util.List;
 
 /**
@@ -11,6 +15,22 @@ import java.util.List;
  * @date: 2024/06/04
  */
 public interface UserContactService {
+
+	/**
+	 * 搜索好友
+	 * @param userId 当前用户的id
+	 * @param contactId 需要搜索的用户或群组的ID
+	 * */
+	UserContactSearchResultDto searchContact(String userId,String contactId);
+
+
+	/**
+	 * 添加好友
+	 * @param tokenUserInfoDto 用户tokenDto中的信息
+	 * @param contactId 需要搜索的用户或群组的ID
+	 * @param applyInfo 申请信息
+	 * */
+	Integer applyAdd(TokenUserInfoDto tokenUserInfoDto, String contactId, String applyInfo) throws BusinessException;
 
 
 	/**

@@ -3,6 +3,8 @@ package com.easyChat.services;
 import com.easyChat.entity.po.UserContactApply;
 import com.easyChat.entity.query.UserContactApplyQuery;
 import com.easyChat.entity.vo.PaginationResultVO;
+import com.easyChat.exception.BusinessException;
+
 import java.util.List;
 
 /**
@@ -12,6 +14,12 @@ import java.util.List;
  */
 public interface UserContactApplyService {
 
+	/**
+	 * @param userId 当前用户id
+	 * @param applyId 页码
+	 * @param status (1:同意，2:拒绝，3: 拉黑)
+	 * */
+	void dealWithApply(String userId, Integer applyId, Integer status) throws BusinessException;
 
 	/**
 	 * 根据条件查询列表

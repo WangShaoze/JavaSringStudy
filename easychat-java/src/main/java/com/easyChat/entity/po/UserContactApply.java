@@ -50,7 +50,20 @@ public class UserContactApply implements Serializable {
 	 */
 	private String applyInfo;
 
-	public void setApplyId(Integer applyId) { 
+	/**
+	 * 联系人的姓名
+	 * */
+	private String contactName;
+
+	public String getContactName() {
+		return contactName;
+	}
+
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
+
+	public void setApplyId(Integer applyId) {
 		this.applyId = applyId;
 	}
 	public Integer getApplyId() { 

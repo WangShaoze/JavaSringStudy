@@ -50,6 +50,13 @@ public class GroupInfoQuery extends BaseQuery {
 	 */
 	private Integer status;
 
+	/**
+	 * 群组id
+	 */
+	private String groupOwnerId;
+
+	private String groupOwnerIdFuzzy;
+
 	public void setGroupId(String groupId) { 
 		this.groupId = groupId;
 	}
@@ -92,6 +99,13 @@ public class GroupInfoQuery extends BaseQuery {
 		return this.status;
 	}
 
+	public void setGroupOwnerId(String groupOwnerId) { 
+		this.groupOwnerId = groupOwnerId;
+	}
+	public String getGroupOwnerId() { 
+		return this.groupOwnerId;
+	}
+
 	public void setGroupIdFuzzy(String groupIdFuzzy) { 
 		this.groupIdFuzzy = groupIdFuzzy;
 	}
@@ -125,6 +139,13 @@ public class GroupInfoQuery extends BaseQuery {
 	}
 	public String getGroupNoticeFuzzy() { 
 		return this.groupNoticeFuzzy;
+	}
+
+	public void setGroupOwnerIdFuzzy(String groupOwnerIdFuzzy) { 
+		this.groupOwnerIdFuzzy = groupOwnerIdFuzzy;
+	}
+	public String getGroupOwnerIdFuzzy() { 
+		return this.groupOwnerIdFuzzy;
 	}
 
 

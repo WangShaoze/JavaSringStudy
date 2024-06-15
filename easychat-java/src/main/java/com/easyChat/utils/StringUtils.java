@@ -13,6 +13,13 @@ public class StringUtils {
         return getRandomNumber(Constants.LENGTH_11);
     }
 
+    public static final String getGroupId(){
+        /**
+         * 生成12位GroupId,需要返回11位
+         * */
+        return getRandomNumber(Constants.LENGTH_11);
+    }
+
     public static String getRandomNumber(int count){
         return RandomStringUtils.random(count, false, true);
     }
