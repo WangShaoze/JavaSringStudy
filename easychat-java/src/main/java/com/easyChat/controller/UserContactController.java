@@ -10,7 +10,8 @@ import com.easyChat.entity.query.UserContactQuery;
 import com.easyChat.entity.vo.PaginationResultVO;
 import com.easyChat.entity.vo.ResponseVO;
 import com.easyChat.entity.po.UserContact;
-import com.easyChat.enums.PageSize;
+import com.easyChat.entity.vo.UserInfoVO;
+import com.easyChat.enums.*;
 import com.easyChat.exception.BusinessException;
 import com.easyChat.services.UserContactApplyService;
 import com.easyChat.services.UserContactService;
@@ -20,6 +21,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.easyChat.services.UserInfoService;
+import com.easyChat.utils.CopyTools;
+import jodd.util.ArraysUtil;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
@@ -56,7 +59,7 @@ public class UserContactController extends ABaseController {
 	}
 
 	/**
-	 * 添加好友
+	 * 添加联系人
 	 * @param contactId 需要搜索的用户或群组的ID
 	 * @param applyInfo 申请信息
 	 * */
@@ -96,6 +99,102 @@ public class UserContactController extends ABaseController {
 	public ResponseVO dealWithApply(HttpServletRequest request, @NotNull Integer applyId, @NotNull Integer status) throws BusinessException {
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
 		this.userContactApplyService.dealWithApply(tokenUserInfoDto.getUserId(), applyId, status);
+		return getSuccessResponseVO(null);
+	}
+
+	/**
+	 * 获取联系人列表
+	 * @param contactType (U -> user 用户 || G -> group 群组)
+	 * */
+	@RequestMapping("/load_contact")
+	@GlobalInterceptor
+	public ResponseVO loadContact(HttpServletRequest request, @NotNull String contactType) throws BusinessException {
+		UserContractTypeEnum  userContractTypeEnum = UserContractTypeEnum.getByName(contactType);
+		if(null==userContractTypeEnum){  // 传入的联系人类型，如果没有在库中找到该类型说明传入参数错误
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		UserContactQuery userContactQuery = new UserContactQuery();
+		userContactQuery.setUserId(tokenUserInfoDto.getUserId());
+		userContactQuery.setContactType(userContractTypeEnum.getType());
+		if (UserContractTypeEnum.USER==userContractTypeEnum){
+			userContactQuery.setQueryUserInfo(true);
+		}else if (UserContractTypeEnum.GROUP==userContractTypeEnum){
+			userContactQuery.setQueryGroupInfo(true);
+			userContactQuery.setQueryExcludeMyGroup(true);  // 排除属于自己的群组账号
+		}
+		userContactQuery.setOrderBy("last_update_time desc");
+		userContactQuery.setStatusArray(new Integer[]{
+				UserContactStatusEnum.FRIEND.getStatus(),
+				UserContactStatusEnum.DEL_BE.getStatus(),
+				UserContactStatusEnum.BLACKLIST_BE.getStatus(),
+				UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus(),
+		});
+		List<UserContact> contactList = userContactService.findListByParam(userContactQuery);
+		return getSuccessResponseVO(contactList);
+	}
+
+	/**
+	 * 查询联系人的信息 (不一定是好友，可能是同一个群的)
+	 * @param contactId 需要查询联系人的信息的ID
+	 * */
+	@RequestMapping("/get_contact_info")
+	@GlobalInterceptor
+	public ResponseVO getContactInfo(HttpServletRequest request, @NotNull String contactId){
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		UserInfo userInfo = userInfoService.getByUserId(contactId);
+		UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+		userInfoVO.setConcatStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
+		UserContact userContact = userContactService.getByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
+		if (userContact!=null){
+			userInfoVO.setConcatStatus(UserContactStatusEnum.FRIEND.getStatus());
+		}
+		return getSuccessResponseVO(userInfoVO);
+	}
+
+	/**
+	 * 查询联系人的信息 （一定是好友或者以前是好友）
+	 * @param contactId 需要查询联系人的信息的ID
+	 * */
+	@RequestMapping("/get_contact_user_info")
+	@GlobalInterceptor
+	public ResponseVO getContactUserInfo(HttpServletRequest request, @NotNull String contactId) throws BusinessException{
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		UserContact userContact = userContactService.getByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
+		if (null==userContact|| !ArraysUtil.contains(new Integer[]{
+				UserContactStatusEnum.FRIEND.getStatus(),
+				UserContactStatusEnum.DEL_BE.getStatus(),
+				UserContactStatusEnum.BLACKLIST_BE.getStatus()
+		}, userContact.getStatus())){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);  // 抛出参数异常
+		}
+		UserInfo userInfo = userInfoService.getByUserId(contactId);
+		UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+		return getSuccessResponseVO(userInfoVO);
+	}
+
+
+	/**
+	 * 删除联系人
+	 * @param contactId 联系人id
+	 * */
+	 @RequestMapping("del_contact")
+	 @GlobalInterceptor
+	 public ResponseVO delContact(HttpServletRequest request, @NotNull String contactId){
+		 TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		 userContactService.removeUserContact(tokenUserInfoDto.getUserId(), contactId, UserContactStatusEnum.DEL);
+		 return getSuccessResponseVO(null);
+	 }
+
+	/**
+	 * 拉黑联系人
+	 * @param contactId 联系人id
+	 * */
+	@RequestMapping("add_contact2_blacklist")
+	@GlobalInterceptor
+	public ResponseVO addContact2BlackList(HttpServletRequest request, @NotNull String contactId){
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		userContactService.removeUserContact(tokenUserInfoDto.getUserId(), contactId, UserContactStatusEnum.BLACKLIST);
 		return getSuccessResponseVO(null);
 	}
 

@@ -5,6 +5,7 @@ import com.easyChat.entity.dto.UserContactSearchResultDto;
 import com.easyChat.entity.po.UserContact;
 import com.easyChat.entity.query.UserContactQuery;
 import com.easyChat.entity.vo.PaginationResultVO;
+import com.easyChat.enums.UserContactStatusEnum;
 import com.easyChat.exception.BusinessException;
 
 import java.util.List;
@@ -32,6 +33,14 @@ public interface UserContactService {
 	 * */
 	Integer applyAdd(TokenUserInfoDto tokenUserInfoDto, String contactId, String applyInfo) throws BusinessException;
 
+
+	/**
+	 * 移除联系人
+	 * @param userId 当前用户id
+	 * @param contactId 联系人id
+	 * @param contactStatusEnum DEL
+	 * */
+	void  removeUserContact(String userId, String contactId, UserContactStatusEnum contactStatusEnum);
 
 	/**
 	 * 根据条件查询列表

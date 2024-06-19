@@ -1,12 +1,25 @@
 package com.easyChat.controller;
 
+import com.easyChat.annotation.GlobalInterceptor;
+import com.easyChat.entity.constants.Constants;
+import com.easyChat.entity.dto.TokenUserInfoDto;
 import com.easyChat.entity.query.UserInfoQuery;
 import com.easyChat.entity.vo.ResponseVO;
 import com.easyChat.entity.po.UserInfo;
+import com.easyChat.entity.vo.UserInfoVO;
 import com.easyChat.services.UserInfoService;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+import com.easyChat.utils.CopyTools;
+import com.easyChat.utils.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -15,10 +28,80 @@ import java.util.List;
  * @date: 2024/05/27
  */
 @RestController
-@RequestMapping("/userInfoService")
+@RequestMapping("/userInfo")
 public class UserInfoController extends ABaseController {
 	@Resource
 	private UserInfoService userInfoService;
+
+
+	/**
+	 * 获取当前用户的信息
+	 * */
+	@RequestMapping("get_user_info")
+	@GlobalInterceptor
+	public ResponseVO getUserInfo(HttpServletRequest request){
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		UserInfo userInfo = userInfoService.getByUserId(tokenUserInfoDto.getUserId());
+		UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+		userInfoVO.setAdmin(tokenUserInfoDto.getAdmin());
+		return getSuccessResponseVO(userInfoVO);
+	}
+
+	/**
+	 * 保存用户信息
+	 * @param userInfo  当前登录的用户，用户信息
+	 * @param avatarFile 未压缩的大图
+	 * @param avatarCover 压缩后的小图
+	 * */
+	@RequestMapping("save_user_info")
+	@GlobalInterceptor
+	public ResponseVO saveUserInfo(
+			HttpServletRequest request,
+		   	UserInfo userInfo,
+		   	MultipartFile avatarFile,
+		   	MultipartFile avatarCover
+		   ) throws IOException {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		userInfo.setUserId(tokenUserInfoDto.getUserId());
+		userInfo.setPassword(null);
+		userInfo.setStatus(null);
+		userInfo.setCreateTime(null);
+		userInfo.setLastLoginTime(null);
+		this.userInfoService.updateUserInfo(userInfo, avatarFile, avatarCover);
+		return getUserInfo(request);
+	}
+
+
+	/**
+	 * 更新密码
+	 * @param newPassword  新密码
+	 * */
+	@RequestMapping("update_password")
+	@GlobalInterceptor
+	public ResponseVO updatePassword(HttpServletRequest request,
+									 @NotEmpty @Pattern(regexp = Constants.REGEXP_PASSWORD) String newPassword) {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		UserInfo userInfo = new UserInfo();
+		userInfo.setPassword(StringUtils.encodingMd5(newPassword));
+		this.userInfoService.updateByUserId(userInfo, tokenUserInfoDto.getUserId());
+		// TODO 强制退出，重新登录
+		return getSuccessResponseVO(null);
+	}
+
+
+	/**
+	 *  退出登录
+	 * */
+	@RequestMapping("logout")
+	@GlobalInterceptor
+	public ResponseVO logout(HttpServletRequest request) {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		// TODO 退出登录 关闭 WS 连接
+		return getSuccessResponseVO(null);
+	}
+
+
+
 
 	/**
 	 * 加载数据

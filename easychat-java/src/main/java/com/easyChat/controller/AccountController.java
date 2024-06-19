@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class AccountController extends ABaseController{
     @Resource
     private RedisComponent redisComponent;
 
-    @RequestMapping("/checkCode")
+    @RequestMapping("/check_code")
     public ResponseVO checkCode(){
         ArithmeticCaptcha captcha = new ArithmeticCaptcha(100, 42);
         String code = captcha.text();
@@ -57,7 +58,7 @@ public class AccountController extends ABaseController{
     @RequestMapping("/register")
     public ResponseVO register(@NotEmpty String checkCodeKey,
                                @NotEmpty @Email String email,
-                               @NotEmpty String password,
+                               @NotEmpty @Pattern(regexp = Constants.REGEXP_PASSWORD) String password,
                                @NotEmpty String nickName,
                                @NotEmpty String checkCode
     ){
@@ -94,7 +95,7 @@ public class AccountController extends ABaseController{
         }
     }
 
-    @RequestMapping("/getSysSetting")
+    @RequestMapping("/get_sys_setting")
     @GlobalInterceptor
     public ResponseVO getSysSetting(
     ){

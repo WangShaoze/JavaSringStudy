@@ -1,5 +1,6 @@
 package com.easyChat.services.impl;
 
+import com.easyChat.entity.dto.SysSettingDto;
 import com.easyChat.entity.po.UserContact;
 import com.easyChat.entity.po.UserContactApply;
 import com.easyChat.entity.query.UserContactApplyQuery;
@@ -7,8 +8,10 @@ import com.easyChat.entity.query.UserContactQuery;
 import com.easyChat.enums.ResponseCodeEnum;
 import com.easyChat.enums.UserContactApplyStatusEnum;
 import com.easyChat.enums.UserContactStatusEnum;
+import com.easyChat.enums.UserContractTypeEnum;
 import com.easyChat.exception.BusinessException;
 import com.easyChat.mappers.UserContactMapper;
+import com.easyChat.redis.RedisComponent;
 import com.easyChat.services.UserContactApplyService;
 import com.easyChat.mappers.UserContactApplyMapper;
 import com.easyChat.entity.query.SimplePage;
@@ -17,6 +20,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +37,9 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 	// userContactMapper
 	@Resource
 	private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
+
+	@Resource
+	private RedisComponent redisComponent;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -65,7 +72,14 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 		}
 
 		if (UserContactApplyStatusEnum.PASS.getStatus().equals(status)){
-			// TODO 添加联系人
+			// 添加联系人
+			addContact(
+					userContactApply.getApplyUserId(),
+					userContactApply.getReceiveUserId(),
+					userContactApply.getContactId(),
+					userContactApply.getContactType(),
+					userContactApply.getApplyInfo()
+			);
 			return;
 		}
 
@@ -81,6 +95,64 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 			userContact.setLastUpdateTime(curDate);
 			userContactMapper.insertOrUpdate(userContact);
 		}
+	}
+
+
+	/**
+	 * @param applyUserId 申请人的用户id
+	 * @param receiveUserId 接收者的用户id
+	 * @param contactId 联系人id( userId or groupId)
+	 * @param contactType 联系人类型( user or group )
+	 * @param applyInfo 申请信息
+	 * */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) throws BusinessException {
+		// 群聊人数
+		if (UserContractTypeEnum.GROUP.getType().equals(contactType)){  // 群组
+			UserContactQuery userContactQuery = new UserContactQuery();
+			userContactQuery.setContactId(contactId);
+			userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+
+			// 查询已经加入该群的人的数量
+			Integer count = userContactMapper.selectCount(userContactQuery);
+			SysSettingDto sysSettingDto = redisComponent.getSysSetting();
+			if (count >= sysSettingDto.getMaxGroupMemberCount()){
+				throw new BusinessException("成员已满，无法加入！");
+			}
+		}
+
+		Date curDate = new Date();
+		// 同意的时候双方添加好友
+		List<UserContact> contactList = new ArrayList<>();
+		// 申请人添加对方
+		UserContact userContact = new UserContact();
+		userContact.setUserId(applyUserId);
+		userContact.setContactId(contactId);
+		userContact.setContactType(contactType);
+		userContact.setCreateTime(curDate);
+		userContact.setLastUpdateTime(curDate);
+		userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+		contactList.add(userContact);
+		// 如果是申请好友，接收人添加申请人，如果接受方是群组则不用添加申请人
+		if (UserContractTypeEnum.USER.getType().equals(contactType)){
+			// 用户 《-》 用户
+			userContact = new UserContact();
+			userContact.setUserId(contactId);
+			userContact.setContactId(applyUserId);
+			userContact.setContactType(contactType);
+			userContact.setCreateTime(curDate);
+			userContact.setLastUpdateTime(curDate);
+			userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+			contactList.add(userContact);
+		}
+		// 批量插入
+		userContactMapper.insertOrUpdateBatch(contactList);
+
+		// TODO 如果是好友，接收人也添加申请人为好友 添加缓存
+
+		// TODO 创建会话 发送消息
+
 	}
 
 	/**
@@ -107,7 +179,9 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 		SimplePage simplePage = new SimplePage(query.getPageNo(), count, query.getPageSize());
 		query.setSimplePage(simplePage);
 		List<UserContactApply> list = this.findListByParam(query);
-		PaginationResultVO<UserContactApply> result = new PaginationResultVO(count, simplePage.getPageSize(), simplePage.getPageNo(), simplePage.getPageTotal(), list);
+		PaginationResultVO<UserContactApply> result = new PaginationResultVO(
+				count, simplePage.getPageSize(), simplePage.getPageNo(),
+				simplePage.getPageTotal(), list);
 		return result;
 	}
 

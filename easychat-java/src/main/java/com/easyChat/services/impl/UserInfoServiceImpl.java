@@ -8,9 +8,7 @@ import com.easyChat.entity.po.UserInfoBeauty;
 import com.easyChat.entity.query.UserInfoBeautyQuery;
 import com.easyChat.entity.query.UserInfoQuery;
 import com.easyChat.entity.vo.UserInfoVO;
-import com.easyChat.enums.BeautyAccountStatusEnum;
-import com.easyChat.enums.UserContractTypeEnum;
-import com.easyChat.enums.UserStatusEnum;
+import com.easyChat.enums.*;
 import com.easyChat.exception.BusinessException;
 import com.easyChat.mappers.UserInfoBeautyMapper;
 import com.easyChat.redis.RedisComponent;
@@ -18,24 +16,21 @@ import com.easyChat.services.UserInfoService;
 import com.easyChat.mappers.UserInfoMapper;
 import com.easyChat.entity.query.SimplePage;
 import com.easyChat.entity.vo.PaginationResultVO;
-import com.easyChat.enums.DateTimePatternEnum;
 import com.easyChat.utils.CopyTools;
-import com.easyChat.utils.DateUtils;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import com.easyChat.utils.StringUtils;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jodd.util.ArraysUtil;
 import jodd.util.StringUtil;
-import org.springframework.format.annotation.DateTimeFormat;
 import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: 用户信息表 业务接口实现
@@ -58,6 +53,67 @@ public class UserInfoServiceImpl implements UserInfoService{
 
 	@Resource
 	private RedisComponent redisComponent;
+
+	/**
+	 * 更新用户信息
+	 * @param userInfo 当前登录的用户信息
+	 * @param avatarFile 未压缩的大图
+	 * @param avatarCover 压缩后的小图
+	 * */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void updateUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
+		if(avatarFile!=null){
+			String baseFolder = appConfig.getProjectFolder()+Constants.FILE_FOLDER_FILE;
+			File targetFileFolder = new File(baseFolder+Constants.FILE_FOLDER_FILE_AVATAR_NAME);
+			if (!targetFileFolder.exists()){
+				targetFileFolder.mkdirs();
+			}
+			String filePath = targetFileFolder.getPath()+"/"+userInfo.getUserId()+Constants.IMAGE_SUFFIX;
+			avatarFile.transferTo(new File(filePath));
+			avatarCover.transferTo(new File(targetFileFolder.getParent()+"/"+userInfo.getUserId()+Constants.COVER_IMAGE_SUFFIX));
+		}
+		UserInfo dbInfo = userInfoMapper.selectByUserId(userInfo.getUserId());  // 细节：先查询效果更好，英伟更新相当于需要修改数据库，所以一定会开启事务，如果后面的要做的事情太多，这个查询效率就会很低
+		userInfoMapper.updateByUserId(userInfo, userInfo.getUserId());
+
+		String contactNameUpdate = null;
+		if (!dbInfo.getNickName().equals(userInfo.getNickName())){
+			contactNameUpdate = userInfo.getNickName();
+		}
+
+		// TODO 更新会话中的昵称信息
+
+	}
+
+	/**
+	 * 更新用户状态
+	 *
+	 * @param status 用户当前状态
+	 * @param userId 用户id
+	 * */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void updateUserStatus(Integer status, String userId) throws BusinessException {
+		UserStatusEnum userStatusEnum = UserStatusEnum.getByStatus(status);
+		// 判断状态是否符合要求
+		if (userStatusEnum==null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+		// 更新状态
+		UserInfo userInfo = new UserInfo();
+		userInfo.setStatus(userStatusEnum.getStatus());
+		this.userInfoMapper.updateByUserId(userInfo, userId);
+	}
+
+	/**
+	 * 强制下线
+	 *
+	 * @param userId 用户id
+	 */
+	@Override
+	public void forceOffline(String userId) throws BusinessException {
+		// TODO 强制下线
+	}
 
 	/**
 	 * 根据条件查询列表
@@ -194,7 +250,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 
 		if (useBeautyAccount){
 			UserInfoBeauty userInfoBeauty1 = new UserInfoBeauty();
-			userInfoBeauty1.setStatus(BeautyAccountStatusEnum.USE.getStatus());
+			userInfoBeauty1.setStatus(BeautyAccountStatusEnum.USED.getStatus());
 			userInfoBeautyMapper.updateById(userInfoBeauty1, userInfoBeauty.getId());
 		}
 

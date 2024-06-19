@@ -75,11 +75,11 @@ public class GroupInfoServiceImpl implements GroupInfoService{
 			}
 
 			if (null==avatarFile){
-				throw new BusinessException(ResponseCodeEnum.CODE_600);
+//				throw new BusinessException(ResponseCodeEnum.CODE_600);
 			}
 
 			groupInfo.setCreateTime(curDate);
-			groupInfo.setGroupId(com.easyChat.utils.StringUtils.getGroupId());
+			groupInfo.setGroupId(UserContractTypeEnum.GROUP.getPrefix()+com.easyChat.utils.StringUtils.getGroupId());
 			this.groupInfoMapper.insert(groupInfo);
 
 			// 将群组添加为自己的联系人

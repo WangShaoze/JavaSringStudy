@@ -13,6 +13,7 @@ import com.easyChat.exception.BusinessException;
 import com.easyChat.mappers.GroupInfoMapper;
 import com.easyChat.mappers.UserContactApplyMapper;
 import com.easyChat.mappers.UserInfoMapper;
+import com.easyChat.services.UserContactApplyService;
 import com.easyChat.services.UserContactService;
 import com.easyChat.mappers.UserContactMapper;
 import com.easyChat.entity.vo.PaginationResultVO;
@@ -20,6 +21,7 @@ import com.easyChat.utils.CopyTools;
 import com.easyChat.utils.DateUtils;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jodd.util.ArraysUtil;
 import jodd.util.StringUtil;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.annotation.Resource;
@@ -47,6 +49,9 @@ public class UserContactServiceImpl implements UserContactService{
 	@Resource
 	private UserContactApplyMapper<UserContactApply, UserContactApplyQuery> userContactApplyMapper;
 
+	@Resource
+	private UserContactApplyService userContactApplyService;
+
 	/**
 	 * 搜索好友
 	 * @param userId 当前用户的id
@@ -71,7 +76,6 @@ public class UserContactServiceImpl implements UserContactService{
 				resultDto = CopyTools.copy(userInfo, UserContactSearchResultDto.class);
 				break;
 			case GROUP:
-
 				GroupInfo groupInfo = groupInfoMapper.selectByGroupId(contactId);
 				if (groupInfo==null){
 					return null;
@@ -121,7 +125,10 @@ public class UserContactServiceImpl implements UserContactService{
 
 		// 查询对方好友是否已经添加，如果已经拉黑无法添加
 		UserContact userContact = userContactMapper.selectByUserIdAndContactId(applyUserId, contactId);
-		if (userContact!=null&&userContact.getStatus().equals(UserContactStatusEnum.BLACKLIST_BE.getStatus())){
+		if (userContact!=null&& ArraysUtil.contains(new Integer[]{
+				UserContactStatusEnum.BLACKLIST_BE.getStatus(),
+				UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()
+		}, userContact.getStatus())){
 			throw new BusinessException("对方已将你拉黑，无法添加");
 		}
 
@@ -142,12 +149,14 @@ public class UserContactServiceImpl implements UserContactService{
 				throw new BusinessException(ResponseCodeEnum.CODE_600);
 			}
 			joinType = userInfo.getJoinType();
-			System.out.println(joinType);
 		}
 
 		// 直接加入不用记录申请记录
 		if (joinType.equals(JoinTypeEnum.JOIN.getType())){
-			// TODO 添加联系人
+			// 添加联系人
+			userContactApplyService.addContact(
+					applyUserId, receiveUserId, contactId,
+					userContractTypeEnum.getType(), applyInfo);
 			return joinType;
 		}
 		UserContactApply userContactApplyInDB = userContactApplyMapper.selectByApplyUserIdAndReceiveUserIdAndContactId(applyUserId, receiveUserId, contactId);
@@ -174,6 +183,35 @@ public class UserContactServiceImpl implements UserContactService{
 			// TODO 发送 ws 消息
 		}
 		return joinType;
+	}
+
+
+	/**
+	 * 移除联系人
+	 * @param userId 当前用户id
+	 * @param contactId 联系人id
+	 * @param contactStatusEnum DEL
+	 * */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void removeUserContact(String userId, String contactId, UserContactStatusEnum contactStatusEnum) {
+		// 移除好友
+		UserContact userContact = new UserContact();
+		userContact.setStatus(contactStatusEnum.getStatus());
+		userContactMapper.updateByUserIdAndContactId(userContact, userId, contactId);
+
+		// 在好友的联系人列表中移除自己
+		UserContact friendContact = new UserContact();
+		if(UserContactStatusEnum.DEL == contactStatusEnum){
+			friendContact.setStatus(UserContactStatusEnum.DEL_BE.getStatus());
+		} else if(UserContactStatusEnum.BLACKLIST == contactStatusEnum){
+			friendContact.setStatus(UserContactStatusEnum.BLACKLIST_BE.getStatus());
+		}
+		userContactMapper.updateByUserIdAndContactId(friendContact, contactId, userId);
+
+		// TODO 从我的好友列表缓存中删除好友
+		// TODO 从好友列表缓存中删除我
+
 	}
 
 	/**

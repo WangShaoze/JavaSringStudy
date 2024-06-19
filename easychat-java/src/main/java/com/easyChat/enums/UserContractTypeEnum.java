@@ -4,7 +4,7 @@ import jodd.util.StringUtil;
 
 public enum UserContractTypeEnum {
     USER(0, "U", "好友"),
-    GROUP(0, "G", "群");
+    GROUP(1, "G", "群");
 
     private Integer type;
     private String prefix;

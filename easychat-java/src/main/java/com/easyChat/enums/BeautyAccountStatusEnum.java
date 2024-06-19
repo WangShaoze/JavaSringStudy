@@ -4,7 +4,7 @@ import java.security.PublicKey;
 
 public enum BeautyAccountStatusEnum {
     NO_USE(0, "未使用"),
-    USE(1, "使用");
+    USED(1, "使用");
 
     private Integer status;
     private String desc;

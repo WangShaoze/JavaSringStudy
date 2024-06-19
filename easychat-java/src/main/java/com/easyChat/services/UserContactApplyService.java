@@ -21,6 +21,16 @@ public interface UserContactApplyService {
 	 * */
 	void dealWithApply(String userId, Integer applyId, Integer status) throws BusinessException;
 
+
+	/**
+	 * @param applyUserId 申请人的用户id
+	 * @param receiveUserId 接收者的用户id
+	 * @param contactId 联系人id( userId or groupId)
+	 * @param contactType 联系人类型( user or group )
+	 * @param applyInfo 申请信息
+	 * */
+	void addContact(String applyUserId,String receiveUserId, String contactId, Integer contactType, String applyInfo) throws BusinessException;
+
 	/**
 	 * 根据条件查询列表
 	 */

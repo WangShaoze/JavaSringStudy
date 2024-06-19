@@ -49,6 +49,30 @@ public class UserContact implements Serializable {
 	@DateTimeFormat(pattern="YYYY-MM-dd HH:mm:ss")
 	private Date lastUpdateTime;
 
+
+	/**
+	 * 补充:
+	 * 联系人是用户的时候 需要关联查询出 nick_name -> contactName sex
+	 * 联系人是群组的时候 需要关联查询出 group_name -> contactName
+	 * */
+	private String contactName;
+	private String sex;
+
+	public String getContactName() {
+		return contactName;
+	}
+
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
 	public void setUserId(String userId) { 
 		this.userId = userId;
 	}

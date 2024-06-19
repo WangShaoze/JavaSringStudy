@@ -48,7 +48,7 @@ public class GroupInfoController extends ABaseController {
 	@RequestMapping("/save_group")
 	@GlobalInterceptor
 	public ResponseVO saveGroup(HttpServletRequest request,
-								@NotEmpty String groupId,
+								String groupId,
 								String groupName,
 								String groupNotice,
 								@NotNull Integer joinType,
@@ -61,6 +61,7 @@ public class GroupInfoController extends ABaseController {
 		groupInfo.setGroupName(groupName);
 		groupInfo.setGroupNotice(groupNotice);
 		groupInfo.setJoinType(joinType);
+		groupInfo.setGroupOwnerId(tokenUserInfoDto.getUserId());
 		groupInfoService.saveGroup(groupInfo, avatarFile, avatarCover);
 
 		return getSuccessResponseVO(null);
@@ -71,8 +72,7 @@ public class GroupInfoController extends ABaseController {
 	 * */
 	@RequestMapping("/load_my_group")
 	@GlobalInterceptor
-	public ResponseVO saveGroup(HttpServletRequest request){
-
+	public ResponseVO loadMyGroup(HttpServletRequest request){
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
 		GroupInfo groupInfo = new GroupInfo();
 		GroupInfoQuery groupInfoQuery = new GroupInfoQuery();
@@ -112,7 +112,7 @@ public class GroupInfoController extends ABaseController {
 	}
 
 	/**
-	 * 获取群组聊天信息
+	 * 获取群聊群详细信息
 	 * */
 	@RequestMapping("/get_group_chat_info")
 	@GlobalInterceptor

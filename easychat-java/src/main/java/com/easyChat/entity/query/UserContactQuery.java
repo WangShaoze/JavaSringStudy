@@ -59,6 +59,67 @@ public class UserContactQuery extends BaseQuery {
 	 * */
 	private Boolean queryUserInfo;
 
+	/**
+	 * 是否关联查询群组信息
+	 * */
+	private Boolean queryGroupInfo;
+
+	/**
+	 * 是否关联查询联系人信息
+	 * */
+	private Boolean queryContactUserInfo;
+
+
+	/**
+	 * 是否需要自己创建的群组
+	 * */
+	private Boolean queryExcludeMyGroup;
+
+	/**
+	 * 联系人状态
+	 * statusArray
+	 * 	   NOT_FRIEND(0, "非好友"),
+	 *     FRIEND(1, "好友"),
+	 *     DEL(2, "已删除好友"),
+	 *     DEL_BE(3, "被删除好友"),
+	 *     BLACKLIST(4, "拉黑好友"),
+	 *     BLACKLIST_BE(5, "被好友拉黑");
+	 * */
+	private Integer[] statusArray;
+
+	public Integer[] getStatusArray() {
+		return statusArray;
+	}
+
+	public void setStatusArray(Integer[] statusArray) {
+		this.statusArray = statusArray;
+	}
+
+	public Boolean getQueryExcludeMyGroup() {
+		return queryExcludeMyGroup;
+	}
+
+	public void setQueryExcludeMyGroup(Boolean queryExcludeMyGroup) {
+		this.queryExcludeMyGroup = queryExcludeMyGroup;
+	}
+
+
+	public Boolean getQueryContactUserInfo() {
+		return queryContactUserInfo;
+	}
+
+	public void setQueryContactUserInfo(Boolean queryContactUserInfo) {
+		this.queryContactUserInfo = queryContactUserInfo;
+	}
+
+	public Boolean getQueryGroupInfo() {
+		return queryGroupInfo;
+	}
+
+	public void setQueryGroupInfo(Boolean queryGroupInfo) {
+		this.queryGroupInfo = queryGroupInfo;
+	}
+
 	public Boolean getQueryUserInfo() {
 		return queryUserInfo;
 	}
