@@ -19,6 +19,7 @@ public class HandlerHeartBeat extends ChannelDuplexHandler {
                 logger.info("心跳超时");
             }else if (e.state()==IdleState.WRITER_IDLE){
                 ctx.writeAndFlush("heart");
+
             }
         }
     }

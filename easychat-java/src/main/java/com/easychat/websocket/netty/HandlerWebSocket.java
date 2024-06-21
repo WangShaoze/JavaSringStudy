@@ -31,6 +31,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
         // 收消息
         Channel channel = ctx.channel();
         logger.info("收到消息:{}", textWebSocketFrame.text());
+
     }
 
 }
