@@ -164,7 +164,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.2.6.RELEASE</version>
 				<configuration>
-					<mainClass>com.easyChat.EasyChatApplication</mainClass>
+					<mainClass>com.easychat.EasyChatApplication</mainClass>
 				</configuration>
 			</plugin>
 		</plugins>
