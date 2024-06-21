@@ -57,6 +57,19 @@ public class GroupInfo implements Serializable {
 	 * */
 	private Integer memberCount;
 
+	/**
+	 * 群主昵称
+	 * */
+	private String groupOwnerNickName;
+
+	public String getGroupOwnerNickName() {
+		return groupOwnerNickName;
+	}
+
+	public void setGroupOwnerNickName(String groupOwnerNickName) {
+		this.groupOwnerNickName = groupOwnerNickName;
+	}
+
 	public Integer getMemberCount() {
 		return memberCount;
 	}

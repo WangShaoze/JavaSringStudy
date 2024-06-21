@@ -38,4 +38,12 @@ public class RedisComponent {
         return sysSettingDto;
     }
 
+    /**
+     * 保存系统设置
+     *
+     * */
+    public void saveSysSetting(SysSettingDto sysSettingDto){
+        redisUtils.set(Constants.REDIS_KEY_SYS_SETTING, sysSettingDto);
+    }
+
 }

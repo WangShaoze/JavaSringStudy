@@ -7,9 +7,7 @@ import com.easyChat.entity.po.GroupInfo;
 import com.easyChat.entity.po.UserContact;
 import com.easyChat.entity.query.GroupInfoQuery;
 import com.easyChat.entity.query.UserContactQuery;
-import com.easyChat.enums.ResponseCodeEnum;
-import com.easyChat.enums.UserContactStatusEnum;
-import com.easyChat.enums.UserContractTypeEnum;
+import com.easyChat.enums.*;
 import com.easyChat.exception.BusinessException;
 import com.easyChat.mappers.UserContactMapper;
 import com.easyChat.redis.RedisComponent;
@@ -18,7 +16,6 @@ import com.easyChat.services.GroupInfoService;
 import com.easyChat.mappers.GroupInfoMapper;
 import com.easyChat.entity.query.SimplePage;
 import com.easyChat.entity.vo.PaginationResultVO;
-import com.easyChat.enums.DateTimePatternEnum;
 import com.easyChat.utils.DateUtils;
 
 import java.io.File;
@@ -54,6 +51,37 @@ public class GroupInfoServiceImpl implements GroupInfoService{
 	@Resource
 	private AppConfig appConfig;
 
+	/**
+	 * 解散群组操作
+	 * @param groupOwnerId 群主id
+	 * @param groupId 群 id
+	 * */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void dissolutionGroup(String groupOwnerId, String groupId) throws BusinessException {
+		GroupInfo dbInfo = this.groupInfoMapper.selectByGroupId(groupId);
+		if (null==dbInfo || !dbInfo.getGroupOwnerId().equals(groupOwnerId)){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+
+		// 删除群组
+		GroupInfo groupInfo = new GroupInfo();
+		groupInfo.setStatus(GroupStatusEnum.DISSOLUTION.getStatus());
+		this.groupInfoMapper.updateByGroupId(groupInfo, groupId);
+
+		// 更新群联系人的信息
+		UserContactQuery userContactQuery = new UserContactQuery();
+		userContactQuery.setContactId(groupId);
+		userContactQuery.setContactType(UserContractTypeEnum.GROUP.getType());
+
+		UserContact userContact = new UserContact();
+		userContact.setStatus(UserContactStatusEnum.DEL.getStatus());
+		this.userContactMapper.updateByParam(userContact,userContactQuery);
+
+		// TODO 移除相关群成员的联系人缓存
+		// TODO 发消息 1.更行会话信息  2.记录群消息   3.发送解散通知消息
+
+	}
 
 	/**
 	 * 保存或者更新群组信息

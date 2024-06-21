@@ -24,4 +24,7 @@ public class Constants {
 
     public static final String APPLY_INFO_TEMPLATE="我是%s";
     public static final String REGEXP_PASSWORD="/^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,18}$/";  // 密码校验正则表达式
+    public static final String APP_UPDATE_FOLDER = "/app/";
+    public static final String APP_EXE_SUFFIX = ".exe";
+    public static final String APP_NAME = "EasyChatSetup.";
 }

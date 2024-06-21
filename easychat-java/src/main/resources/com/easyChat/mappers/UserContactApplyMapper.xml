@@ -358,7 +358,7 @@
 
 
 	<!-- 根据查询体更新对象 -->
-	<update id="updateByParam" parameterType="com.easyChat.entity.query.UserContactApplyQuery">
+	<update id="updateByParam" parameterType="com.easyChat.entity.po.UserContactApply">
 		update user_contact_apply a
 		<set>
 			<if test="bean.applyId != null">

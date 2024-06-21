@@ -57,7 +57,33 @@ public class GroupInfoQuery extends BaseQuery {
 
 	private String groupOwnerIdFuzzy;
 
-	public void setGroupId(String groupId) { 
+	/**
+	 * 展示群主昵称
+	 * */
+	private Boolean showGroupOwnerNickName;
+
+	/**
+	 * 展示群成员数量
+	 * */
+	private Boolean showMemberCount;
+
+	public Boolean getShowGroupOwnerNickName() {
+		return showGroupOwnerNickName;
+	}
+
+	public void setShowGroupOwnerNickName(Boolean showGroupOwnerNickName) {
+		this.showGroupOwnerNickName = showGroupOwnerNickName;
+	}
+
+	public Boolean getShowMemberCount() {
+		return showMemberCount;
+	}
+
+	public void setShowMemberCount(Boolean showMemberCount) {
+		this.showMemberCount = showMemberCount;
+	}
+
+	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 	public String getGroupId() { 

@@ -17,6 +17,14 @@ import java.util.List;
 public interface GroupInfoService {
 
 	/**
+	 * 解散群组操作
+	 * @param groupOwnerId 群主id
+	 * @param groupId 群 id
+	 * */
+	void dissolutionGroup(String groupOwnerId, String groupId) throws BusinessException;
+
+
+	/**
 	 * 保存或者更新群组信息
 	 * */
 	void saveGroup(GroupInfo groupInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws BusinessException, IOException;
