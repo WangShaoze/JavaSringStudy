@@ -15,10 +15,10 @@ public interface UserContactApplyMapper<T, P> extends BaseMapper{
 	 */
 	T selectByApplyId(@Param("applyId") Integer applyId);
 
-	/**
-	 * 更具 查询体 更新
-	 * */
-	Integer updateByParam(@Param("bean") T t, @Param("query") P query);
+//	/**
+//	 * 更具 查询体 更新
+//	 * */
+//	Integer updateByParam(@Param("bean") T t, @Param("query") P query);
 
 	/**
 	 *

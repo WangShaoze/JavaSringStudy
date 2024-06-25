@@ -8,11 +8,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * @Description: 项目启动类
- * @author: 王绍泽
- * @date: 2024/05/27
- */
-@EnableAsync  // 异步调用
+ * @ClassName RunApplication
+ * @Description 项目入口启动类
+ * @Author
+ * @Date
+ * */
+@EnableAsync  // 满足异步调用需要
 @SpringBootApplication(scanBasePackages = {"com.easychat"})
 @MapperScan(basePackages = "com.easyChat.mappers")
 @EnableTransactionManagement  // 事务管理

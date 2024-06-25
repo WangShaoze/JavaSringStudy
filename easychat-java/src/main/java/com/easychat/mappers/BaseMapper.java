@@ -21,4 +21,7 @@ public interface BaseMapper<T, P> {
 
     // 根据参数查询数量
     Integer selectCount(@Param("query") P p);
+
+    // 根据查询体更新
+    Integer updateByParam(@Param("bean") T t, @Param("query") P p);
 }

@@ -3,8 +3,10 @@ package com.easychat.services.impl;
 import com.easychat.entity.config.AppConfig;
 import com.easychat.entity.constants.Constants;
 import com.easychat.entity.dto.TokenUserInfoDto;
+import com.easychat.entity.po.UserContact;
 import com.easychat.entity.po.UserInfo;
 import com.easychat.entity.po.UserInfoBeauty;
+import com.easychat.entity.query.UserContactQuery;
 import com.easychat.entity.query.UserInfoBeautyQuery;
 import com.easychat.entity.query.UserInfoQuery;
 import com.easychat.entity.vo.UserInfoVO;
@@ -12,6 +14,8 @@ import com.easychat.enums.*;
 import com.easychat.exception.BusinessException;
 import com.easychat.mappers.UserInfoBeautyMapper;
 import com.easychat.redis.RedisComponent;
+import com.easychat.services.ChatSessionUserService;
+import com.easychat.services.UserContactService;
 import com.easychat.services.UserInfoService;
 import com.easychat.mappers.UserInfoMapper;
 import com.easychat.entity.query.SimplePage;
@@ -31,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 用户信息表 业务接口实现
@@ -53,6 +58,12 @@ public class UserInfoServiceImpl implements UserInfoService{
 
 	@Resource
 	private RedisComponent redisComponent;
+
+	@Resource
+	private UserContactService userContactService;
+
+	@Resource
+	private ChatSessionUserService chatSessionUserService;
 
 	/**
 	 * 更新用户信息
@@ -80,8 +91,17 @@ public class UserInfoServiceImpl implements UserInfoService{
 		if (!dbInfo.getNickName().equals(userInfo.getNickName())){
 			contactNameUpdate = userInfo.getNickName();
 		}
+		if (contactNameUpdate==null){
+			return;
+		}
 
-		// TODO 更新会话中的昵称信息
+		// 更新token中的昵称
+		TokenUserInfoDto tokenUserInfoDto = redisComponent.getTokenUserInfoDtoByUserId(userInfo.getUserId());
+		tokenUserInfoDto.setNickName(contactNameUpdate);
+		redisComponent.saveTokenUserInfoDto(tokenUserInfoDto);
+
+		// 更新昵称信息
+		chatSessionUserService.updateRedundantInformation(contactNameUpdate, userInfo.getUserId());
 
 	}
 
@@ -254,7 +274,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 			userInfoBeautyMapper.updateById(userInfoBeauty1, userInfoBeauty.getId());
 		}
 
-		// TODO 创建机器人好友
+		userContactService.addContact4Robot(userId);
 	}
 
 	@Override
@@ -268,8 +288,19 @@ public class UserInfoServiceImpl implements UserInfoService{
 			throw new BusinessException("账号已禁用");
 		}
 
-		// TODO 查询群组
-		// TODO 查询联系人
+		//  查询联系人
+		UserContactQuery contactQuery = new UserContactQuery();
+		contactQuery.setUserId(userInfo.getUserId());
+		contactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+		List<UserContact> contactList = userInfoMapper.selectList(contactQuery);
+		List<String> contactIdList = contactList.stream().map(item->item.getContactId()).collect(Collectors.toList());
+
+		// 将联系人列表添加到redis数据库中去
+		redisComponent.clearUserContact(userInfo.getUserId());
+		if (!contactIdList.isEmpty()){
+			redisComponent.addUserContactBatch(userInfo.getUserId(), contactIdList);
+		}
+
 
 		// 判断他是不是管理员
 		TokenUserInfoDto tokenUserInfoDto = getUserInfoToken(userInfo);

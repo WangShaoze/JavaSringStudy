@@ -19,10 +19,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @Description: app发布 Controller
- * @author: 王绍泽
- * @date: 2024/06/21
- */
+ * @ClassName AdminAppUpdateController
+ * @Description 管理员更新应用
+ * @Author
+ * @Date
+ * */
 @RestController("adminAppUpdateController")
 @RequestMapping("/admin")
 public class AdminAppUpdateController extends ABaseController {
@@ -94,91 +95,5 @@ public class AdminAppUpdateController extends ABaseController {
 		return getSuccessResponseVO(null);
 	}
 
-
-	/**
-	 * 加载数据
-	 */
-	@RequestMapping("/loadDataList")
-	public ResponseVO loadDataList(AppUpdateQuery query) {
-		return getSuccessResponseVO(this.appUpdateService.findListByPage(query));
-	}
-
-	/**
-	 * 新增
-	 */
-	@RequestMapping("/add")
-	public ResponseVO add(AppUpdate bean) {
-		this.appUpdateService.add(bean);
-		return getSuccessResponseVO(null);	}
-
-	/**
-	 * 批量新增
-	 */
-	@RequestMapping("/addBatch")
-	public ResponseVO addBatch(List<AppUpdate> listBean) {
-		this.appUpdateService.addBatch(listBean);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 批量新增/修改
-	 */
-	@RequestMapping("/addOrUpdateBatch")
-	public ResponseVO addOrUpdateBatch(List<AppUpdate> listBean) {
-		this.appUpdateService.addOrUpdateBatch(listBean);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据 Id查询
-	 */
-	@RequestMapping("/getById")
-	public ResponseVO<AppUpdate> getById(Integer id) {
-		return getSuccessResponseVO(this.appUpdateService.getById(id));
-	}
-
-	/**
-	 * 根据 Id更新
-	 */
-	@RequestMapping("/updateById")
-	public ResponseVO updateById(AppUpdate bean,Integer id) {
-		this.appUpdateService.updateById(bean, id);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据 Id删除
-	 */
-	@RequestMapping("/deleteById")
-	public ResponseVO deleteById(Integer id) throws BusinessException {
-		this.appUpdateService.deleteById(id);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据 Version查询
-	 */
-	@RequestMapping("/getByVersion")
-	public ResponseVO<AppUpdate> getByVersion(String version) {
-		return getSuccessResponseVO(this.appUpdateService.getByVersion(version));
-	}
-
-	/**
-	 * 根据 Version更新
-	 */
-	@RequestMapping("/updateByVersion")
-	public ResponseVO updateByVersion(AppUpdate bean,String version) {
-		this.appUpdateService.updateByVersion(bean, version);
-		return getSuccessResponseVO(null);
-	}
-
-	/**
-	 * 根据 Version删除
-	 */
-	@RequestMapping("/deleteByVersion")
-	public ResponseVO deleteByVersion(String version) {
-		this.appUpdateService.deleteByVersion(version);
-		return getSuccessResponseVO(null);
-	}
 }
 

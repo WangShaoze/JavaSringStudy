@@ -23,6 +23,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+
+/**
+ * @ClassName AccountController
+ * @Description 账号控制层
+ * @Author
+ * @Date
+ * */
 @RestController("accountController")
 @RequestMapping("/account")
 @Validated

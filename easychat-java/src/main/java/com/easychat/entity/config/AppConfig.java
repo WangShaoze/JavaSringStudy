@@ -4,6 +4,12 @@ import jodd.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * @ClassName AppConfig
+ * @Description 配置文件
+ * @Author
+ * @Date
+ * */
 @Component("appConfig")
 public class AppConfig {
     /**

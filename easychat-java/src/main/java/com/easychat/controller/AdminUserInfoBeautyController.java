@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @ClassName AdminUserInfoBeautyController
+ * @Description 管理员靓号管理
+ * @Author
+ * @Date
+ * */
 @RestController("adminUserInfoBeautyController")
 @RequestMapping("/admin")
 public class AdminUserInfoBeautyController extends ABaseController {

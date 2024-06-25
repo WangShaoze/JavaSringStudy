@@ -14,6 +14,12 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @ClassName AdminSysSettingController
+ * @Description 管理员系统设置
+ * @Author
+ * @Date
+ * */
 @RestController("adminSysSettingController")
 @RequestMapping("admin")
 public class AdminSysSettingController extends ABaseController {

@@ -5,6 +5,12 @@ import com.easychat.entity.po.UserContact;
 
 import java.util.List;
 
+/**
+ * @ClassName GroupInfoVO
+ * @Description 群组信息
+ * @Author
+ * @Date
+ * */
 public class GroupInfoVO {
     private GroupInfo groupInfo;
 

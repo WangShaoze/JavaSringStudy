@@ -31,10 +31,10 @@ public interface UserContactMapper<T, P> extends BaseMapper{
 	T selectByParam(@Param("query") P query);
 
 
-	/**
-	 * 根据条件参数去更新
-	 * */
-	Integer updateByParam(@Param("bean") T t, @Param("query") P query);
+//	/**
+//	 * 根据条件参数去更新
+//	 * */
+//	Integer updateByParam(@Param("bean") T t, @Param("query") P query);
 //
 //	/**
 //	 * 根据条件参数去删除

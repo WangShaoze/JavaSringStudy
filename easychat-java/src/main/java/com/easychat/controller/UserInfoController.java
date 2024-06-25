@@ -23,10 +23,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * @Description: 用户信息表 Controller
- * @author: 王绍泽
- * @date: 2024/05/27
- */
+ * @ClassName UserInfoController
+ * @Description 用户信息
+ * @Author
+ * @Date
+ * */
 @RestController
 @RequestMapping("/userInfo")
 public class UserInfoController extends ABaseController {

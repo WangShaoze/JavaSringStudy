@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @ClassName RedisUtils
+ * @Description redis工具类
+ * @Author
+ * @Date
+ * */
 @Component("redisUtils")
 public class RedisUtils<V> {
 

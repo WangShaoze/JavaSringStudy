@@ -42,6 +42,12 @@ public interface UserContactService {
 	 * */
 	void  removeUserContact(String userId, String contactId, UserContactStatusEnum contactStatusEnum);
 
+
+	/**
+	* 添加机器人为好友
+	* */
+	void addContact4Robot(String userId);
+
 	/**
 	 * 根据条件查询列表
 	 */

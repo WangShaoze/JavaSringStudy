@@ -4,6 +4,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
+/**
+ * @ClassName TokenUserInfoDto
+ * @Description token信息
+ * @Author
+ * @Date
+ * */
 @Component("tokenUserInfoDto")
 public class TokenUserInfoDto implements Serializable {
     private String token;

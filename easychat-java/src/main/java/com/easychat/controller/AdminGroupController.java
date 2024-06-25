@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * @ClassName AdminGroupController
+ * @Description 管理员群组管理
+ * @Author
+ * @Date
+ * */
 @RestController("adminGroupInfoController")
 @RequestMapping("/admin")
 public class AdminGroupController extends ABaseController {

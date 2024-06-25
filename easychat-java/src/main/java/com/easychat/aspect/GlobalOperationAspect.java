@@ -21,6 +21,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
+/**
+ * GlobalOperationAspect
+ * 全局切面
+ * */
 @Aspect
 @Component("globalOperationAspect")
 public class GlobalOperationAspect {

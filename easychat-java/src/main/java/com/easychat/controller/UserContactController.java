@@ -28,10 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * @Description: 联系人 Controller
- * @author: 王绍泽
- * @date: 2024/06/04
- */
+ * @ClassName UserContactController
+ * @Description 用户管理
+ * @Author
+ * @Date
+ * */
 @RestController
 @RequestMapping("/contact")
 public class UserContactController extends ABaseController {

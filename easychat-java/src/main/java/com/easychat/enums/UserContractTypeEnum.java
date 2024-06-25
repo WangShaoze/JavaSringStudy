@@ -2,6 +2,13 @@ package com.easychat.enums;
 
 import jodd.util.StringUtil;
 
+
+/**
+ * @EnumName UserContractTypeEnum
+ * @Description 联系人类型
+ * @Author
+ * @Date
+ * */
 public enum UserContractTypeEnum {
     USER(0, "U", "好友"),
     GROUP(1, "G", "群");

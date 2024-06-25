@@ -59,6 +59,16 @@ public class UserContactApplyQuery extends BaseQuery {
 
 	private Boolean queryContactInfo;   // 是否关联查询联系人信息
 
+	private Long lastApplyTimeStamp;
+
+	public Long getLastApplyTimeStamp() {
+		return lastApplyTimeStamp;
+	}
+
+	public void setLastApplyTimeStamp(Long lastApplyTimeStamp) {
+		this.lastApplyTimeStamp = lastApplyTimeStamp;
+	}
+
 	public Boolean getQueryContactInfo() {
 		return queryContactInfo;
 	}
