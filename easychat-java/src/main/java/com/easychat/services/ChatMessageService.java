@@ -1,8 +1,14 @@
 package com.easychat.services;
 
+import com.easychat.entity.dto.MessageSendDto;
+import com.easychat.entity.dto.TokenUserInfoDto;
 import com.easychat.entity.po.ChatMessage;
 import com.easychat.entity.query.ChatMessageQuery;
 import com.easychat.entity.vo.PaginationResultVO;
+import com.easychat.exception.BusinessException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 import java.util.List;
 
 /**
@@ -12,6 +18,22 @@ import java.util.List;
  */
 public interface ChatMessageService {
 
+	/**
+	 * 保存消息
+	 * */
+	MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) throws BusinessException;
+
+
+	/**
+	 * 保存文件消息
+	 * */
+
+	void saveMessageFile(String userId, Long messageId,MultipartFile file, MultipartFile cover) throws BusinessException;
+
+	/**
+	 * 下载文件
+	 * */
+	File downloadFile(TokenUserInfoDto tokenUserInfoDto, Long fileId, Boolean showCover) throws BusinessException;
 
 	/**
 	 * 根据条件查询列表

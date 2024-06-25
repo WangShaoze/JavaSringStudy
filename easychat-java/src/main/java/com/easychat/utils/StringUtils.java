@@ -120,6 +120,28 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 判断字符串是不是全是数字
+     * */
+    public static boolean isNumber(String str){
+        if (null==str){
+            return false;
+        }
+        String checkNumber = "^[0-9]+$";
+        if (!str.matches(checkNumber)){
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isNotNumber(String str){
+        return !isNumber(str);
+    }
+
+
+    /**
+     * 替换 消息文本中可能出现的可执行代码
+     * */
     public static String cleanHtmlTag(String content){
         if (isEmpty(content)){
             return content;
@@ -143,5 +165,15 @@ public class StringUtils {
      * */
     public static String genChatSessionId4Group(String groupId){
         return encodingMd5(groupId);
+    }
+
+    /**
+     * 获取文件后缀
+     * */
+    public static String getFileSuffix(String fileName){
+        if (fileName==null){
+            return null;
+        }
+        return fileName.substring(fileName.lastIndexOf("."));
     }
 }
