@@ -176,4 +176,21 @@
 		delete from chat_session where session_id=#{sessionId} 
 	</delete>
 
+	<!--更具查询体更新	 -->
+	<update id="updateByParam">
+		update chat_session
+		<set>
+			<if test="bean.sessionId != null">
+				session_id = #{bean.sessionId},
+			</if>
+			<if test="bean.lastMessage != null">
+				last_message = #{bean.lastMessage},
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time = #{bean.lastReceiveTime},
+			</if>
+		</set>
+		<include refid="query_condition"/>
+	</update>
+
 </mapper>

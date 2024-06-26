@@ -50,4 +50,6 @@ public class Constants {
     public static final String[] VIDEO_SUFFIX_LIST = new String[]{".mp4",".avi",".rmvb",".mkv",".mov"};
 
     public static final Long FILE_SIZE_MB = 1024*1024L;
+    public static final Integer ZERO = 0;
+    public static final Integer ONE = 1;
 }

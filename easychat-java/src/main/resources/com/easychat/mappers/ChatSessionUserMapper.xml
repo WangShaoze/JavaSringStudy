@@ -214,7 +214,7 @@
 		delete from chat_session_user where user_id=#{userId} and contact_id=#{contactId} 
 	</delete>
 
-	<!--	 -->
+	<!--更具查询体更新	 -->
 	<update id="updateByParam">
 		update chat_session_user
 		<set>

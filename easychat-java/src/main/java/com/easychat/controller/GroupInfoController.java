@@ -9,6 +9,7 @@ import com.easychat.entity.vo.GroupInfoVO;
 import com.easychat.entity.vo.ResponseVO;
 import com.easychat.entity.po.GroupInfo;
 import com.easychat.enums.GroupStatusEnum;
+import com.easychat.enums.MessageTypeEnum;
 import com.easychat.enums.UserContactStatusEnum;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.GroupInfoService;
@@ -125,6 +126,43 @@ public class GroupInfoController extends ABaseController {
 		groupInfoVO.setGroupInfo(groupInfo);
 		groupInfoVO.setUserContactList(userContactList);
 		return getSuccessResponseVO(groupInfo);
+	}
+
+	/**
+	 * 添加或移除群成员
+	 * */
+	@RequestMapping("/add_or_remove_group_user")
+	@GlobalInterceptor
+	public ResponseVO addOrRemoveGroupUser(HttpServletRequest request,
+										   @NotEmpty String groupId,
+										   @NotEmpty String selectContacts,
+										   @NotNull Integer opType) throws BusinessException {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		groupInfoService.addOrRemoveGroupUser(tokenUserInfoDto, groupId, selectContacts,opType);
+		return getSuccessResponseVO();
+	}
+
+
+	/**
+	 * 退出群聊
+	 * */
+	@RequestMapping("/leave_group")
+	@GlobalInterceptor
+	public ResponseVO leaveGroup(HttpServletRequest request, @NotEmpty String groupId) throws BusinessException {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		groupInfoService.leaveGroup(tokenUserInfoDto.getUserId(), groupId, MessageTypeEnum.LEAVE_GROUP);
+		return getSuccessResponseVO();
+	}
+
+	/**
+	 * 解散群聊
+	 * */
+	@RequestMapping("/dissolution_group")
+	@GlobalInterceptor
+	public ResponseVO dissolutionGroup(HttpServletRequest request, @NotEmpty String groupId) throws BusinessException {
+		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+		groupInfoService.dissolutionGroup(tokenUserInfoDto.getUserId(), groupId);
+		return getSuccessResponseVO();
 	}
 
 

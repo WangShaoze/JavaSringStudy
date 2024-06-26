@@ -2,6 +2,7 @@ package com.easychat.services.impl;
 
 import com.easychat.entity.config.AppConfig;
 import com.easychat.entity.constants.Constants;
+import com.easychat.entity.dto.MessageSendDto;
 import com.easychat.entity.dto.TokenUserInfoDto;
 import com.easychat.entity.po.UserContact;
 import com.easychat.entity.po.UserInfo;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.easychat.utils.StringUtils;
+import com.easychat.websocket.MessageHandler;
 import jodd.util.ArraysUtil;
 import jodd.util.StringUtil;
 import javax.annotation.Resource;
@@ -64,6 +66,9 @@ public class UserInfoServiceImpl implements UserInfoService{
 
 	@Resource
 	private ChatSessionUserService chatSessionUserService;
+
+	@Resource
+	private MessageHandler messageHandler;
 
 	/**
 	 * 更新用户信息
@@ -132,7 +137,12 @@ public class UserInfoServiceImpl implements UserInfoService{
 	 */
 	@Override
 	public void forceOffline(String userId) throws BusinessException {
-		// TODO 强制下线
+		// 强制下线
+		MessageSendDto messageSendDto = new MessageSendDto();
+		messageSendDto.setContactType(UserContractTypeEnum.USER.getType());
+		messageSendDto.setMessageType(MessageTypeEnum.FORCE_OFF_LINE.getType());
+		messageSendDto.setContactId(userId);
+		messageHandler.sendMessage(messageSendDto);
 	}
 
 	/**

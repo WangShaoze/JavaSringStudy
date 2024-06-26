@@ -43,7 +43,7 @@ public class AdminGroupController extends ABaseController {
      * 解散群组
      * */
     @RequestMapping("/dissolution_group")
-//    @GlobalInterceptor(checkAdmin = true)
+    @GlobalInterceptor(checkAdmin = true)
     public ResponseVO dissolutionGroup(@NotEmpty String groupId) throws BusinessException {
         // 判断该用户是否是从前端过来的
         GroupInfo groupInfo = groupInfoService.getByGroupId(groupId);

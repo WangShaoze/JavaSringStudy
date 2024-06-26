@@ -128,4 +128,11 @@ public class RedisComponent {
     public void clearUserContact(String userId) {
         redisUtils.delete(Constants.REDIS_KEY_USER_CONTACT + userId);
     }
+
+    /**
+     * 移除redis中联系人的缓存
+     * */
+    public void removeUserUserContact(String userId, String contactId){
+        redisUtils.remove(Constants.REDIS_KEY_USER_CONTACT + userId, contactId);
+    }
 }

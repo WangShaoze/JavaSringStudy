@@ -15,6 +15,7 @@ import javax.validation.constraints.Pattern;
 
 import com.easychat.utils.CopyTools;
 import com.easychat.utils.StringUtils;
+import com.easychat.websocket.ChannelContextUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,9 @@ import java.util.List;
 public class UserInfoController extends ABaseController {
 	@Resource
 	private UserInfoService userInfoService;
+
+	@Resource
+	private ChannelContextUtils channelContextUtils;
 
 
 	/**
@@ -85,7 +89,8 @@ public class UserInfoController extends ABaseController {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setPassword(StringUtils.encodingMd5(newPassword));
 		this.userInfoService.updateByUserId(userInfo, tokenUserInfoDto.getUserId());
-		// TODO 强制退出，重新登录
+		// 强制退出，重新登录
+		channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
 		return getSuccessResponseVO(null);
 	}
 
@@ -97,7 +102,8 @@ public class UserInfoController extends ABaseController {
 	@GlobalInterceptor
 	public ResponseVO logout(HttpServletRequest request) {
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
-		// TODO 退出登录 关闭 WS 连接
+		// 退出登录 关闭 WS 连接
+		channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
 		return getSuccessResponseVO(null);
 	}
 

@@ -1,6 +1,7 @@
 package com.easychat.entity.po;
 
 import com.easychat.enums.UserContractTypeEnum;
+import com.easychat.utils.StringUtils;
 
 import java.io.Serializable;
 
@@ -55,6 +56,9 @@ public class ChatSessionUser implements Serializable {
 	private Integer contactType;
 
 	public Integer getContactType() {
+		if (StringUtils.isEmpty(contactId)){
+			return null;
+		}
 		return UserContractTypeEnum.getByPrefix(contactId).getType();
 	}
 
