@@ -302,7 +302,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 		UserContactQuery contactQuery = new UserContactQuery();
 		contactQuery.setUserId(userInfo.getUserId());
 		contactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
-		List<UserContact> contactList = userInfoMapper.selectList(contactQuery);
+		List<UserContact> contactList = userContactService.findListByParam(contactQuery);
 		List<String> contactIdList = contactList.stream().map(item->item.getContactId()).collect(Collectors.toList());
 
 		// 将联系人列表添加到redis数据库中去
@@ -310,7 +310,6 @@ public class UserInfoServiceImpl implements UserInfoService{
 		if (!contactIdList.isEmpty()){
 			redisComponent.addUserContactBatch(userInfo.getUserId(), contactIdList);
 		}
-
 
 		// 判断他是不是管理员
 		TokenUserInfoDto tokenUserInfoDto = getUserInfoToken(userInfo);

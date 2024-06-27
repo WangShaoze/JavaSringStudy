@@ -251,7 +251,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService{
 			chatSession.setSessionId(sessionId);
 			chatSession.setLastReceiveTime(curDate.getTime());
 			chatSession.setLastMessage(sendMessage);
-			chatSessionMapper.insertOrUpdate(sendMessage);
+			chatSessionMapper.insertOrUpdate(chatSession);
 			// 增加聊天消息
 			ChatMessage chatMessage = new ChatMessage();
 			chatMessage.setSessionId(sessionId);

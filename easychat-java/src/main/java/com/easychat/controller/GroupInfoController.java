@@ -76,6 +76,7 @@ public class GroupInfoController extends ABaseController {
 		GroupInfoQuery groupInfoQuery = new GroupInfoQuery();
 		groupInfoQuery.setGroupOwnerId(tokenUserInfoDto.getUserId());
 		groupInfoQuery.setOrderBy("create_time desc");
+		groupInfoQuery.setStatus(GroupStatusEnum.NORMAL.getStatus());
 		List<GroupInfo> groupInfoList = groupInfoService.findListByParam(groupInfoQuery);
 		return getSuccessResponseVO(groupInfoList);
 	}

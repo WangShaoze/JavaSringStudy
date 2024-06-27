@@ -135,6 +135,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         chatMessage.setMessageContent(messageContent);
         chatMessageMapper.insert(chatMessage);
         MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
+        messageSendDto.setExtendData(groupOwnerId);
         messageHandler.sendMessage(messageSendDto);
     }
 
@@ -150,6 +151,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         if (StringUtils.isEmpty(groupInfo.getGroupId())) {
             GroupInfoQuery groupInfoQuery = new GroupInfoQuery();
             groupInfoQuery.setGroupOwnerId(groupInfo.getGroupOwnerId());
+            groupInfoQuery.setStatus(GroupStatusEnum.NORMAL.getStatus());
             Integer count = this.groupInfoMapper.selectCount(groupInfoQuery);
             SysSettingDto sysSettingDto = redisComponent.getSysSetting();
 

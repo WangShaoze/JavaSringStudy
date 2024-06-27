@@ -27,7 +27,12 @@ public class ABaseController {
         return responseVO;
     }
     protected <T> ResponseVO getSuccessResponseVO(){
-        return null;
+        ResponseVO<T> responseVO = new ResponseVO();
+        responseVO.setStatus(STATUS_SUCCESS);
+        responseVO.setCode(ResponseCodeEnum.CODE_200.getCode());
+        responseVO.setInfo(ResponseCodeEnum.CODE_200.getMsg());
+        responseVO.setData(null);
+        return responseVO;
     }
 
     protected <T> ResponseVO getBusinessErrorResponseVO(BusinessException e, T t){

@@ -255,6 +255,8 @@ public class ChannelContextUtils {
 
         // 解散群聊时
         if (MessageTypeEnum.DISSOLUTION_GROUP==messageTypeEnum){
+            String userId = (String) messageSendDto.getExtendData();
+            redisComponent.removeUserUserContact(userId, messageSendDto.getContactId());
             GROUP_CONTEXT_MAP.remove(messageSendDto.getContactId());
             channelGroup.close();
         }

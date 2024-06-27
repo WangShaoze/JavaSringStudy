@@ -114,7 +114,7 @@
 
 	<!--查询数量-->
 	<select id="selectCount" resultType="java.lang.Integer">
-		select count(1) from user_contact_apply <include refid="query_condition"/>
+		select count(1) from user_contact_apply a <include refid="query_condition"/>
 	</select>
 
 	<!--插入 （匹配有值的字段）-->
