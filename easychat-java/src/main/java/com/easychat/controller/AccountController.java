@@ -4,6 +4,7 @@ import com.easychat.annotation.GlobalInterceptor;
 import com.easychat.entity.constants.Constants;
 import com.easychat.entity.vo.ResponseVO;
 import com.easychat.entity.vo.UserInfoVO;
+import com.easychat.enums.ResponseCodeEnum;
 import com.easychat.exception.BusinessException;
 import com.easychat.redis.RedisComponent;
 import com.easychat.redis.RedisUtils;
@@ -85,15 +86,13 @@ public class AccountController extends ABaseController{
                                @NotEmpty @Email String email,
                                @NotEmpty String password,
                                @NotEmpty String checkCode
-    ){
+    ) throws BusinessException {
         try {
             if (!checkCode.equals(redisUtils.get(Constants.REDIS_KEY_CHECK_CODE+checkCodeKey))){
                 throw new BusinessException("图片验证码不正确！");
             }
             UserInfoVO userInfoVO = userInfoService.login(email, password);
             return getSuccessResponseVO(userInfoVO);
-        } catch (BusinessException e) {
-            throw new RuntimeException(e);
         } finally {
             redisUtils.delete(Constants.REDIS_KEY_CHECK_CODE+checkCodeKey);
         }

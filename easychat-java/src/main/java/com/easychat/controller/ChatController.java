@@ -10,10 +10,7 @@ import com.easychat.entity.vo.ResponseVO;
 import com.easychat.enums.ResponseCodeEnum;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.ChatMessageService;
-import com.easychat.services.ChatSessionUserService;
 import com.easychat.utils.StringUtils;
-import com.sun.xml.internal.bind.v2.TODO;
-import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,23 +33,21 @@ import java.io.OutputStream;
  * @Author
  * @Date
  */
-@RestController("chatController")
+@RestController
 @RequestMapping("/chat")
 public class ChatController extends ABaseController {
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     @Resource
+    private AppConfig appConfig;
+
+    @Resource
     private ChatMessageService chatMessageService;
 
-    @Resource
-    private ChatSessionUserService chatSessionUserService;
-
-    @Resource
-    private AppConfig appConfig;
 
     @RequestMapping("/send_message")
     @GlobalInterceptor
-    private ResponseVO sendMessage(HttpServletRequest request,
+    public ResponseVO sendMessage(HttpServletRequest request,
                                    @NotEmpty String contactId,
                                    @NotEmpty @Max(1000) String messageContent,
                                    @NotNull Integer messageType,
@@ -73,18 +68,19 @@ public class ChatController extends ABaseController {
 
     @RequestMapping("/upload_file")
     @GlobalInterceptor
-    private ResponseVO uploadFile(HttpServletRequest request,
+    public ResponseVO uploadFile(HttpServletRequest request,
                                   @NotNull Long messageId,
                                   @NotNull MultipartFile file,
                                   @NotNull MultipartFile cover) throws BusinessException {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        logger.info("chatMessageService:{}",chatMessageService);
         chatMessageService.saveMessageFile(tokenUserInfoDto.getUserId(), messageId, file, cover);
         return getSuccessResponseVO();
     }
 
     @RequestMapping("/download_file")
     @GlobalInterceptor
-    private void downloadFile(HttpServletRequest request, HttpServletResponse response,
+    public void downloadFile(HttpServletRequest request, HttpServletResponse response,
                                   @NotEmpty String fileId, @NotNull Boolean showCover) throws BusinessException {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
 
@@ -96,7 +92,7 @@ public class ChatController extends ABaseController {
                 String avatarFolderName = Constants.FILE_FOLDER_FILE+Constants.FILE_FOLDER_FILE_AVATAR_NAME;
                 String avatarPath = appConfig.getProjectFolder()+avatarFolderName+fileId+Constants.IMAGE_SUFFIX;
                 if (showCover){
-                    avatarPath = appConfig.getProjectFolder()+avatarFolderName+fileId+Constants.COVER_IMAGE_SUFFIX;
+                    avatarPath = appConfig.getProjectFolder()+Constants.FILE_FOLDER_FILE+fileId+Constants.COVER_IMAGE_SUFFIX;
                 }
                 file = new File(avatarPath);
                 if (!file.exists()){

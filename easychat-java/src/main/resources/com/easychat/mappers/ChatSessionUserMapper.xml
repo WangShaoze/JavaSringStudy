@@ -215,7 +215,7 @@
 	</delete>
 
 	<!--更具查询体更新	 -->
-	<update id="updateByParam">
+	<update id="updateByParam"  parameterType="com.easychat.entity.po.ChatSessionUser">
 		update chat_session_user
 		<set>
 			<if test="bean.userId != null">
@@ -227,7 +227,7 @@
 			<if test="bean.sessionId != null">
 				session_id = #{bean.sessionId},
 			</if>
-			<if test="bean.contactName != null">
+			<if test="bean.contactName != null and bean.contactName != ''">
 				contact_name = #{bean.contactName},
 			</if>
 		</set>

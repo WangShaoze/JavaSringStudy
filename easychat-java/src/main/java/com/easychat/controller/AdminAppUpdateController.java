@@ -1,9 +1,11 @@
 package com.easychat.controller;
 
 import com.easychat.annotation.GlobalInterceptor;
+import com.easychat.entity.constants.Constants;
 import com.easychat.entity.query.AppUpdateQuery;
 import com.easychat.entity.vo.ResponseVO;
 import com.easychat.entity.po.AppUpdate;
+import com.easychat.enums.PageSize;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.AppUpdateService;
 import javax.annotation.Resource;
@@ -37,6 +39,10 @@ public class AdminAppUpdateController extends ABaseController {
 	@GlobalInterceptor(checkAdmin = true)
 	public ResponseVO loadUpdateList(AppUpdateQuery query){
 		query.setOrderBy("id desc");
+		if (query.getPageNo()==null){
+			query.setPageNo(Constants.ONE);
+			query.setPageSize(PageSize.SIZE10.getSize());
+		}
 		return getSuccessResponseVO(appUpdateService.findListByPage(query));
 	}
 
@@ -86,12 +92,12 @@ public class AdminAppUpdateController extends ABaseController {
 	 * 发布更新
 	 * @param id 需要发布版本的id
 	 * @param status 当前的状态
-	 * @param greyscaleUid  需要灰度发布时，必须提供灰度发布的人员UID
+	 * @param grayscaleUid  需要灰度发布时，必须提供灰度发布的人员UID
 	 * */
 	@RequestMapping("/post_update")
 	@GlobalInterceptor(checkAdmin = true)
-	public ResponseVO postUpdate(@NotNull Integer id, @NotNull Integer status, String greyscaleUid) throws BusinessException {
-		appUpdateService.postUpdate(id, status, greyscaleUid);
+	public ResponseVO postUpdate(@NotNull Integer id, @NotNull Integer status, String grayscaleUid) throws BusinessException {
+		appUpdateService.postUpdate(id, status, grayscaleUid);
 		return getSuccessResponseVO(null);
 	}
 

@@ -1,10 +1,12 @@
 package com.easychat.controller;
 
 import com.easychat.annotation.GlobalInterceptor;
+import com.easychat.entity.constants.Constants;
 import com.easychat.entity.po.GroupInfo;
 import com.easychat.entity.query.GroupInfoQuery;
 import com.easychat.entity.vo.PaginationResultVO;
 import com.easychat.entity.vo.ResponseVO;
+import com.easychat.enums.PageSize;
 import com.easychat.enums.ResponseCodeEnum;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.GroupInfoService;
@@ -35,6 +37,10 @@ public class AdminGroupController extends ABaseController {
         groupInfoQuery.setOrderBy("create_time desc");
         groupInfoQuery.setShowGroupOwnerNickName(true);
         groupInfoQuery.setShowMemberCount(true);
+        if (groupInfoQuery.getPageNo()==null){
+            groupInfoQuery.setPageNo(Constants.ONE);
+            groupInfoQuery.setPageSize(PageSize.SIZE10.getSize());
+        }
         PaginationResultVO resultVO = groupInfoService.findListByPage(groupInfoQuery);
         return getSuccessResponseVO(resultVO);
     }

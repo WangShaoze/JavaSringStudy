@@ -3,6 +3,7 @@ package com.easychat.controller;
 import com.easychat.annotation.GlobalInterceptor;
 import com.easychat.entity.dto.TokenUserInfoDto;
 import com.easychat.entity.dto.UserContactSearchResultDto;
+import com.easychat.entity.po.GroupInfo;
 import com.easychat.entity.po.UserContactApply;
 import com.easychat.entity.po.UserInfo;
 import com.easychat.entity.query.UserContactApplyQuery;
@@ -13,6 +14,7 @@ import com.easychat.entity.po.UserContact;
 import com.easychat.entity.vo.UserInfoVO;
 import com.easychat.enums.*;
 import com.easychat.exception.BusinessException;
+import com.easychat.services.GroupInfoService;
 import com.easychat.services.UserContactApplyService;
 import com.easychat.services.UserContactService;
 import javax.annotation.Resource;
@@ -46,6 +48,9 @@ public class UserContactController extends ABaseController {
 	@Resource
 	private UserContactApplyService userContactApplyService;
 
+	@Resource
+	private GroupInfoService groupInfoService;
+
 
 	/**
 	 * 搜索好友
@@ -64,7 +69,7 @@ public class UserContactController extends ABaseController {
 	 * @param contactId 需要搜索的用户或群组的ID
 	 * @param applyInfo 申请信息
 	 * */
-	@RequestMapping("/add_contact")
+	@RequestMapping("/apply_add")
 	@GlobalInterceptor
 	public ResponseVO addContact(HttpServletRequest request, @NotEmpty String contactId, String applyInfo) throws BusinessException {
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
@@ -141,14 +146,22 @@ public class UserContactController extends ABaseController {
 	 * */
 	@RequestMapping("/get_contact_info")
 	@GlobalInterceptor
-	public ResponseVO getContactInfo(HttpServletRequest request, @NotNull String contactId){
+	public ResponseVO getContactInfo(HttpServletRequest request, @NotNull String contactId) throws BusinessException {
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
-		UserInfo userInfo = userInfoService.getByUserId(contactId);
-		UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
-		userInfoVO.setConcatStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
-		UserContact userContact = userContactService.getByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
-		if (userContact!=null){
-			userInfoVO.setConcatStatus(UserContactStatusEnum.FRIEND.getStatus());
+		UserContractTypeEnum contractTypeEnum = UserContractTypeEnum.getByPrefix(contactId);
+		if (contractTypeEnum==null){
+			throw new BusinessException(ResponseCodeEnum.CODE_600);
+		}
+
+		UserInfoVO userInfoVO = null;
+		if (contractTypeEnum==UserContractTypeEnum.USER){
+			UserInfo userInfo = userInfoService.getByUserId(contactId);
+			userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+			userInfoVO.setConcatStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
+			UserContact userContact = userContactService.getByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
+			if (userContact!=null){
+				userInfoVO.setConcatStatus(UserContactStatusEnum.FRIEND.getStatus());
+			}
 		}
 		return getSuccessResponseVO(userInfoVO);
 	}
@@ -191,7 +204,7 @@ public class UserContactController extends ABaseController {
 	 * 拉黑联系人
 	 * @param contactId 联系人id
 	 * */
-	@RequestMapping("add_contact2_blacklist")
+	@RequestMapping("add_contact_to_black_list")
 	@GlobalInterceptor
 	public ResponseVO addContact2BlackList(HttpServletRequest request, @NotNull String contactId){
 		TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
@@ -260,4 +273,7 @@ public class UserContactController extends ABaseController {
 		return getSuccessResponseVO(null);
 	}
 }
+
+
+
 

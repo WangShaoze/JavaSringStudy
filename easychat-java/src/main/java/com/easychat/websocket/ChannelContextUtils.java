@@ -116,6 +116,7 @@ public class ChannelContextUtils {
         chatMessageQuery.setLastReceiveTime(lastOfflineTime);
         List<ChatMessage> chatMessageList = chatMessageMapper.selectList(chatMessageQuery);
         wsInitData.setChatMessageList(chatMessageList);
+
         /**
          * 3.查询新增好友的数量
          * */

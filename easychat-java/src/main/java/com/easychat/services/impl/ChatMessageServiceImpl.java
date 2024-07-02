@@ -9,6 +9,7 @@ import com.easychat.entity.po.ChatMessage;
 import com.easychat.entity.po.ChatSession;
 import com.easychat.entity.po.UserContact;
 import com.easychat.entity.query.ChatMessageQuery;
+import com.easychat.entity.query.ChatSessionQuery;
 import com.easychat.entity.query.UserContactQuery;
 import com.easychat.enums.*;
 import com.easychat.exception.BusinessException;
@@ -44,24 +45,23 @@ import java.util.List;
  */
 @Service("chatMessageService")
 public class ChatMessageServiceImpl implements ChatMessageService{
+	private static final Logger logger = LoggerFactory.getLogger(ChatMessageService.class);
+
 	@Resource
 	private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
 	@Resource
 	private RedisComponent redisComponent;
 	@Resource
-	private ChatSessionMapper chatSessionMapper;
+	private ChatSessionMapper<ChatSession, ChatSessionQuery> chatSessionMapper;
 
 	@Resource
 	private MessageHandler messageHandler;
-
 
 	@Resource
 	private AppConfig appConfig;
 
 	@Resource
 	private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
-
-	private static final Logger logger = LoggerFactory.getLogger(ChatMessageService.class);
 
 
 	@Override
@@ -98,13 +98,15 @@ public class ChatMessageServiceImpl implements ChatMessageService{
 
 		// 对消息类型进行判断
 		MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(chatMessage.getMessageType());
+
 		if (messageTypeEnum==null||!ArraysUtil.contains(new Integer[]{
 				MessageTypeEnum.CHAT.getType(), MessageTypeEnum.MEDIA_CHAT.getType()
-		}, messageTypeEnum)){
-			// 限制只允许 文本信息 和 媒体文件的聊天信息
+		}, messageTypeEnum.getType())){
+			// 限制只允许 文本信息 和 媒体文件的聊天信息,如果是其他类型的消息直接报参数异常
 			throw new BusinessException(ResponseCodeEnum.CODE_600);
 		}
 
+		// 净化代码，方式 html js 代码注入
 		String messageContent = StringUtils.cleanHtmlTag(chatMessage.getMessageContent());
 		chatMessage.setMessageContent(messageContent);
 
@@ -133,8 +135,10 @@ public class ChatMessageServiceImpl implements ChatMessageService{
 			ChatMessage robotChatMessage = new ChatMessage();
 			robotChatMessage.setContactId(sendUserId);
 			// TODO 对接AI接口实现恢复消息
-			robotChatMessage.setMessageContent("I'm EasyChat Robot, but I can't reply with you anything now.");
+			robotChatMessage.setMessageContent("我是EasyChat聊天机器人,接入AI接口以后我可以为你服务。");
 			robotChatMessage.setMessageType(MessageTypeEnum.CHAT.getType());
+
+			// 递归实现机器人自动回复消息实际原理是将 send_user_id 和 contact_id 进行交换，第二次不会走这个if，直接进入else发送消息
 			saveMessage(robotChatMessage, robot);
 		}else{
 			messageHandler.sendMessage(messageSendDto);

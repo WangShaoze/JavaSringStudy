@@ -4,6 +4,8 @@ import jodd.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 /**
  * @ClassName AppConfig
  * @Description 配置文件
@@ -39,8 +41,8 @@ public class AppConfig {
     }
 
     public String getProjectFolder() {
-        if (StringUtil.isEmpty(projectFolder)||!projectFolder.endsWith("/")){
-            projectFolder += "/";
+        if (StringUtil.isEmpty(projectFolder)||!projectFolder.endsWith(File.separator)){
+            projectFolder += File.separator;
         }
         return projectFolder;
     }

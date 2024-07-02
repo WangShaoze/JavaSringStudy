@@ -1,11 +1,15 @@
 package com.easychat.controller;
 
 import com.easychat.annotation.GlobalInterceptor;
+import com.easychat.entity.constants.Constants;
+import com.easychat.entity.query.SimplePage;
 import com.easychat.entity.query.UserInfoQuery;
 import com.easychat.entity.vo.PaginationResultVO;
 import com.easychat.entity.vo.ResponseVO;
+import com.easychat.enums.PageSize;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.UserInfoService;
+import com.easychat.utils.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,6 +37,10 @@ public class AdminUserInfoController extends ABaseController {
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO getUserInfo(UserInfoQuery userInfoQuery) {
         userInfoQuery.setOrderBy("create_time desc");
+        if (userInfoQuery.getPageNo()==null){
+            userInfoQuery.setPageNo(Constants.ONE);
+            userInfoQuery.setPageSize(PageSize.SIZE10.getSize());
+        }
         PaginationResultVO resultVO = userInfoService.findListByPage(userInfoQuery);
         return getSuccessResponseVO(resultVO);
     }

@@ -276,6 +276,7 @@ public class UserInfoServiceImpl implements UserInfoService{
 		userInfo.setCreateTime(curDate);
 		userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
 		userInfo.setLastOffTime(curDate.getTime());
+		userInfo.setJoinType(JoinTypeEnum.APPLY.getType());
 		this.userInfoMapper.insert(userInfo);
 
 		if (useBeautyAccount){
@@ -295,7 +296,8 @@ public class UserInfoServiceImpl implements UserInfoService{
 			throw new BusinessException("账号不存存或密码不正确");
 		}
 		if (UserStatusEnum.DISABLE.getStatus().equals(userInfo.getStatus())){
-			throw new BusinessException("账号已禁用");
+			// 禁用账号
+			throw new BusinessException(ResponseCodeEnum.CODE_904);
 		}
 
 		//  查询联系人

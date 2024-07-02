@@ -362,7 +362,7 @@
 		    <include refid="base_column_list"/>
 		from app_update
 		where version>#{appVersion} and
-		      (status=2 or (status=1 and find_in_set(#{uid}, grayscale_uid))
+		      (status=2 or (status=1 and find_in_set(#{uid}, grayscale_uid)))
 		      order by id desc limit 0, 1
 	</select>
 </mapper>

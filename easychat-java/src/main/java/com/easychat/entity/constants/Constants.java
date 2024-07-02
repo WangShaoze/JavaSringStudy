@@ -2,6 +2,8 @@ package com.easychat.entity.constants;
 
 import com.easychat.enums.UserContractTypeEnum;
 
+import java.io.File;
+
 /**
  * @ClassName Constants
  * @Description 常量
@@ -29,14 +31,14 @@ public class Constants {
     public static final String REDIS_KEY_SYS_SETTING= "easychat:syssetting:";
 
 
-    public static final String FILE_FOLDER_FILE="/file";
-    public static final String FILE_FOLDER_FILE_AVATAR_NAME="/avatar";
+    public static final String FILE_FOLDER_FILE="file"+ File.separator;
+    public static final String FILE_FOLDER_FILE_AVATAR_NAME="avatar"+ File.separator;
     public static final String IMAGE_SUFFIX=".png";
     public static final String COVER_IMAGE_SUFFIX="_cover.png";
 
     public static final String APPLY_INFO_TEMPLATE="我是%s";
     public static final String REGEXP_PASSWORD="^(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,18}$";  // 密码校验正则表达式
-    public static final String APP_UPDATE_FOLDER = "/app/";
+    public static final String APP_UPDATE_FOLDER = "app"+ File.separator;
     public static final String APP_EXE_SUFFIX = ".exe";
     public static final String APP_NAME = "EasyChatSetup.";
 

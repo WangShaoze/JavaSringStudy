@@ -160,11 +160,11 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             }
 
             if (null == avatarFile) {
-//				throw new BusinessException(ResponseCodeEnum.CODE_600);
+				throw new BusinessException(ResponseCodeEnum.CODE_600);
             }
 
             groupInfo.setCreateTime(curDate);
-            groupInfo.setGroupId(UserContractTypeEnum.GROUP.getPrefix() + com.easychat.utils.StringUtils.getGroupId());
+            groupInfo.setGroupId(UserContractTypeEnum.GROUP.getPrefix() + StringUtils.getGroupId());
             this.groupInfoMapper.insert(groupInfo);
 
             // 将群组添加为自己的联系人
@@ -232,10 +232,9 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             if (!dbGroupInfo.getGroupName().equals(groupInfo.getGroupName())) {
                 contactNameUpdate = groupInfo.getGroupName();
             }
-            if (contactNameUpdate == null) {
-                return;
+            if (contactNameUpdate!=null){
+                chatSessionUserService.updateRedundantInformation(contactNameUpdate, groupInfo.getGroupId());
             }
-            chatSessionUserService.updateRedundantInformation(contactNameUpdate, groupInfo.getGroupId());
         }
 
         if (null == avatarFile) {
@@ -246,12 +245,12 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         if (!targetFileFolder.exists()) {
             targetFileFolder.mkdirs();
         }
-        String filePath = targetFileFolder.getPath() + "/" + groupInfo.getGroupId() + Constants.IMAGE_SUFFIX;
-
+        String filePath = targetFileFolder.getPath()+ groupInfo.getGroupId() + Constants.IMAGE_SUFFIX;
+        String coverFilePath = baseFolder+ groupInfo.getGroupId() + Constants.COVER_IMAGE_SUFFIX;
 
         // 上传头像的图片
         avatarFile.transferTo(new File(filePath));
-        avatarCover.transferTo(new File(filePath + Constants.COVER_IMAGE_SUFFIX));
+        avatarCover.transferTo(new File(coverFilePath));
     }
 
     @Override

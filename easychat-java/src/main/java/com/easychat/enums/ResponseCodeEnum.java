@@ -9,6 +9,7 @@ public enum ResponseCodeEnum {
     CODE_901(901, "登录超时"),
     CODE_902(902, "你和对方还不是好友，请发送好友声请！"),
     CODE_903(903, "你已不再群聊，请重新声请加入！"),
+    CODE_904(904, "你的账号已被禁用！"),
     CODE_500(500, "服务器返回错误，请联系管理员");
     private Integer code;
     public String msg;

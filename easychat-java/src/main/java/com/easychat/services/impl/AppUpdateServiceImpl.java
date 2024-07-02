@@ -70,7 +70,7 @@ public class AppUpdateServiceImpl implements AppUpdateService {
             // 对版本进行校验
             AppUpdate latest = appUpdateList.get(0);  // 数据库中的最新版
             Long dbLatestVersion = Long.parseLong(latest.getVersion().replace(".", ""));
-            Long currentVersion = Long.parseLong(appUpdate.getVersion().replace(",", ""));
+            Long currentVersion = Long.parseLong(appUpdate.getVersion().replace(".", ""));
 
             // 新增时版本必须大于数据库中的最新版
             if (appUpdate.getId() == null && currentVersion <= dbLatestVersion) {
@@ -94,13 +94,13 @@ public class AppUpdateServiceImpl implements AppUpdateService {
             appUpdateMapper.updateById(appUpdate, appUpdate.getId());
         }
 
-        if (file == null) {
+        if (file != null) {
             // 保存 app更新包
             File folder = new File(appConfig.getProjectFolder() + Constants.APP_UPDATE_FOLDER);
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            file.transferTo(new File(folder.getAbsolutePath() + "/" + appUpdate.getId() + Constants.APP_EXE_SUFFIX));
+            file.transferTo(new File(folder.getAbsolutePath() + appUpdate.getId() + Constants.APP_EXE_SUFFIX));
         }
     }
 

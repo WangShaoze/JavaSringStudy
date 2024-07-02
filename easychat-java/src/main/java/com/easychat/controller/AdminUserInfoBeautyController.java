@@ -1,10 +1,12 @@
 package com.easychat.controller;
 
 import com.easychat.annotation.GlobalInterceptor;
+import com.easychat.entity.constants.Constants;
 import com.easychat.entity.po.UserInfoBeauty;
 import com.easychat.entity.query.UserInfoBeautyQuery;
 import com.easychat.entity.vo.PaginationResultVO;
 import com.easychat.entity.vo.ResponseVO;
+import com.easychat.enums.PageSize;
 import com.easychat.exception.BusinessException;
 import com.easychat.services.UserInfoBeautyService;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,10 @@ public class AdminUserInfoBeautyController extends ABaseController {
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO getUserInfo(UserInfoBeautyQuery userInfoBeautyQuery) {
         userInfoBeautyQuery.setOrderBy("id desc");
+        if (userInfoBeautyQuery.getPageNo()==null){
+            userInfoBeautyQuery.setPageNo(Constants.ONE);
+            userInfoBeautyQuery.setPageSize(PageSize.SIZE10.getSize());
+        }
         PaginationResultVO resultVO = userInfoBeautyService.findListByPage(userInfoBeautyQuery);
         return getSuccessResponseVO(resultVO);
     }

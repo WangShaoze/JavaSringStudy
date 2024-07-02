@@ -59,8 +59,8 @@ public class AdminSysSettingController extends ABaseController {
             if (!targetFileFolder.exists()){
                 targetFileFolder.mkdirs();
             }
-            String filePath = targetFileFolder.getPath()+"/"+Constants.ROBOT_UID+Constants.IMAGE_SUFFIX;
-            String filePathCover = targetFileFolder.getPath()+"/"+Constants.ROBOT_UID+Constants.COVER_IMAGE_SUFFIX;
+            String filePath = targetFileFolder.getPath()+Constants.ROBOT_UID+Constants.IMAGE_SUFFIX;
+            String filePathCover = baseFolder+Constants.ROBOT_UID+Constants.COVER_IMAGE_SUFFIX;
             robotFile.transferTo(new File(filePath));
             robotCover.transferTo(new File(filePathCover));
         }
